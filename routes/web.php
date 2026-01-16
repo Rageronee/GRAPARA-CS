@@ -38,9 +38,11 @@ Route::get('/debug-test', function () {
     $report = [
         'environment' => app()->environment(),
         'php_version' => phpversion(),
-        'config_session_driver' => config('session.driver'), // Should be 'database'
-        'config_view_path' => config('view.compiled'),       // Should be '/tmp'
-        'ssl_cert_path' => env('MYSQL_ATTR_SSL_CA') ?: 'Auto-Detect',
+        'config_session_driver' => config('session.driver'),
+        'config_view_path' => config('view.compiled'),
+        'ssl_cert_path_env' => env('MYSQL_ATTR_SSL_CA'),
+        'ssl_cert_file_exists_public' => file_exists(public_path('isrgrootx1.pem')),
+        'ssl_cert_path_resolved' => file_exists(public_path('isrgrootx1.pem')) ? public_path('isrgrootx1.pem') : 'FALLBACK SYSTEM',
         'db_config_options' => \DB::connection()->getConfig('options'),
     ];
 
