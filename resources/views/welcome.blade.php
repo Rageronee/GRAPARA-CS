@@ -57,18 +57,28 @@
           }
       }" x-init="if({{ Auth::check() && Auth::user()->role === 'customer' ? 'true' : 'false' }}) fetchHistory()">
 
-    <!-- Global Loader (Seamless) -->
+    <!-- Global Loader (Premium w/ Logo) -->
     <div x-show="loading"
-        class="fixed inset-0 z-[100] bg-white/60 backdrop-blur-[4px] flex items-center justify-center transition-opacity duration-300"
-        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" style="display: none;">
-        <div class="flex flex-col items-center gap-4 bg-white/80 p-6 rounded-2xl shadow-xl border border-white/50">
-            <div class="relative">
-                 <div class="w-12 h-12 border-4 border-blue-100 rounded-full"></div>
-                 <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+        class="fixed inset-0 z-[100] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center transition-all duration-500"
+        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" 
+        style="display: none;">
+        
+        <div class="relative flex flex-col items-center">
+            <!-- Logo Animation -->
+            <div class="relative w-24 h-24 mb-6">
+                <div class="absolute inset-0 bg-blue-100 rounded-full animate-ping opacity-20"></div>
+                <div class="absolute inset-0 bg-white rounded-full shadow-xl flex items-center justify-center border border-slate-100 z-10">
+                    <img src="/grapara.png" alt="Loading..." class="w-14 h-14 object-contain animate-pulse">
+                </div>
+                <!-- Spinning Ring -->
+                <div class="absolute -inset-2 border-4 border-blue-600/20 rounded-full"></div>
+                <div class="absolute -inset-2 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
             </div>
-            <p class="text-slate-800 font-bold animate-pulse text-xs tracking-wider">PLEASE WAIT...</p>
+            
+            <h3 class="text-xl font-bold text-slate-900 tracking-tight">Grapara</h3>
+            <p class="text-blue-600 text-xs font-bold uppercase tracking-[0.2em] animate-pulse mt-1">Future Connection</p>
         </div>
     </div>
 
