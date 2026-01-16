@@ -178,4 +178,20 @@ class QueueController extends Controller
 
         return response()->json($queues);
     }
+
+    // Customer: Give Rating
+    public function rate(Request $request, Queue $queue)
+    {
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'feedback' => 'nullable|string'
+        ]);
+
+        $queue->update([
+            'rating' => $request->rating,
+            'feedback' => $request->feedback
+        ]);
+
+        return back()->with('message', 'Terima kasih atas penilaian Anda!');
+    }
 }
