@@ -6,9 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CS Workspace</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap"
         rel="stylesheet">
-    <link rel="icon" href="https://img.icons8.com/fluency/48/headset.png"> <!-- Favicon CS -->
+    <link rel="icon" href="/grapara.ico"> <!-- Favicon CS -->
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -16,7 +17,32 @@
     </style>
 </head>
 
-<body class="bg-slate-50 text-slate-800 min-h-screen flex overflow-hidden">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex overflow-hidden" x-data="{ loading: false }">
+
+    <!-- Global Loader (Premium w/ Logo) -->
+    <div x-show="loading"
+        class="fixed inset-0 z-[100] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center transition-all duration-500"
+        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" 
+        style="display: none;">
+        
+        <div class="relative flex flex-col items-center">
+            <!-- Logo Animation -->
+            <div class="relative w-24 h-24 mb-6">
+                <div class="absolute inset-0 bg-blue-100 rounded-full animate-ping opacity-20"></div>
+                <div class="absolute inset-0 bg-white rounded-full shadow-xl flex items-center justify-center border border-slate-100 z-10">
+                    <img src="/grapara.png" alt="Loading..." class="w-14 h-14 object-contain animate-pulse">
+                </div>
+                <!-- Spinning Ring -->
+                <div class="absolute -inset-2 border-4 border-blue-600/20 rounded-full"></div>
+                <div class="absolute -inset-2 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            
+            <h3 class="text-xl font-bold text-slate-900 tracking-tight">Grapara</h3>
+            <p class="text-blue-600 text-xs font-bold uppercase tracking-[0.2em] animate-pulse mt-1">Future Connection</p>
+        </div>
+    </div>
 
     <!-- Sidebar: Incoming Complaints -->
     <aside class="w-80 bg-white border-r border-slate-200 flex flex-col z-20 shadow-sm">
@@ -28,7 +54,7 @@
 
         <div class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50/50">
             @forelse($complaints as $complaint)
-                <form action="{{ route('queue.call_specific', $complaint->id) }}" method="POST" class="block">
+                <form action="{{ route('queue.call_specific', $complaint->id) }}" method="POST" class="block" @submit="loading = true">
                     @csrf
                     <button type="submit" class="w-full text-left group relative overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
                         
@@ -111,7 +137,7 @@
                             </path>
                         </svg>
                     </a>
-                    <form action="{{ route('logout') }}" method="POST">
+                    <form action="{{ route('logout') }}" method="POST" @submit="loading = true">
                         @csrf
                         <button class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                             title="Logout">
@@ -153,19 +179,12 @@
                         Refresh
                     </button>
 
-                    <!-- Control Panel -->
-                    <form action="{{ route('cs.next') }}" method="POST" class="flex gap-3">
+                    <!-- Control Panel (Auto Call Option) -->
+                    <form action="{{ route('cs.call_auto') }}" method="POST" class="flex md:w-auto w-full" @submit="loading = true">
                         @csrf
-                        <select name="service_id"
-                            class="bg-white border border-slate-200 text-slate-700 rounded-xl px-4 py-2 focus:outline-none focus:border-blue-400 shadow-sm cursor-pointer">
-                            <option value="3">Priority (Pengaduan)</option>
-                            <option value="1">General (CS)</option>
-                        </select>
-                        <input type="hidden" name="counter_id" value="1">
-
                         <button type="submit"
-                            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-blue-600/20 transition flex items-center gap-2">
-                            Panggil Antrian
+                            class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-blue-600/20 transition flex items-center gap-2">
+                            Panggil Auto
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z">
@@ -227,8 +246,32 @@
                             </div>
                         @endif
 
+                        <!-- Customer History Section -->
+                        @isset($customerHistory)
+                        <div class="mb-8 border-t border-slate-100 pt-6">
+                            <h4 class="text-slate-600 font-bold mb-4 flex items-center gap-2 text-sm uppercase tracking-wide">
+                                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Riwayat Interaksi User
+                            </h4>
+                            <div class="space-y-3">
+                                @forelse($customerHistory as $history)
+                                <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-xl">
+                                    <span class="font-mono font-bold text-slate-500 text-xs">{{ $history->ticket_number }}</span>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-semibold text-slate-800">"{{ $history->issue_detail ?? 'Layanan Reguler' }}"</p>
+                                        <p class="text-xs text-slate-500 mt-1">Solusi: <span class="italic text-slate-600">{{ $history->staff_response ?? '-' }}</span></p>
+                                    </div>
+                                    <span class="text-[10px] text-slate-400">{{ $history->created_at->diffForHumans() }}</span>
+                                </div>
+                                @empty
+                                <p class="text-sm text-slate-400 italic">Belum ada riwayat sebelumnya.</p>
+                                @endforelse
+                            </div>
+                        </div>
+                        @endisset
+
                         <!-- Response Form -->
-                        <form action="{{ route('cs.complete', session('queue')->id) }}" method="POST" class="mt-4">
+                        <form action="{{ route('cs.complete', session('queue')->id) }}" method="POST" class="mt-4" @submit="loading = true">
                             @csrf
                             <div class="mb-6">
                                 <label class="block text-slate-700 text-sm font-bold mb-2 ml-1">Saran / Tindakan Solusi</label>

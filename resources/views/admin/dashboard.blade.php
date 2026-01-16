@@ -45,50 +45,72 @@
 
     <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
 
-        <!-- ACTIVE TICKET WORKSPACE (Visible when serving) -->
-        @if(session('queue'))
-            <div class="bg-gradient-to-br from-blue-900 to-slate-900 rounded-3xl p-8 shadow-2xl relative overflow-hidden animate-fade-in-down border border-blue-800">
-                <!-- Background Decoration -->
-                <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full blur-[100px] opacity-20 pointer-events-none"></div>
-
-                <div class="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-                    <!-- Ticket Info -->
-                    <div class="md:col-span-2">
-                        <div class="flex items-center gap-4 mb-6">
-                            <span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">SEDANG DILAYANI</span>
-                            <span class="text-blue-300 font-mono text-sm tracking-widest uppercase">ID: {{ session('queue')->ticket_number }}</span>
-                        </div>
-                        
-                        <h1 class="text-5xl font-bold text-white mb-2">{{ session('queue')->ticket_number }}</h1>
-                        <p class="text-blue-200 text-lg mb-8 flex items-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                            {{ session('queue')->customer_name }}
-                        </p>
-
-                        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10">
-                            <h3 class="text-blue-300 text-sm font-bold uppercase mb-2">Keluhan / Keperluan:</h3>
-                            <p class="text-white text-lg font-medium leading-relaxed">"{{ session('queue')->issue_detail }}"</p>
-                        </div>
-                    </div>
-
-                    <!-- Action Form -->
-                    <div class="bg-white rounded-2xl p-6 shadow-lg">
-                        <h3 class="text-slate-800 font-bold mb-4 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                            Input Tindakan
-                        </h3>
-                        <form action="{{ route('cs.complete', session('queue')->id) }}" method="POST">
-                            @csrf
-                            <textarea name="staff_response" rows="4" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 mb-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm text-slate-700" placeholder="Tulis solusi atau tindakan yang diambil..." required></textarea>
-                            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-600/20 transition flex items-center justify-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                SELESAIKAN TIKET
-                            </button>
-                        </form>
-                    </div>
-                </div>
+        <!-- ANALYTICS HUB HEADER -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">Performance Monitor</h1>
+                <p class="text-slate-500">Analisis Kinerja Customer Service</p>
             </div>
-        @endif
+            <!-- Date Filter (Mock UI) -->
+            <div class="flex bg-white rounded-lg p-1 border border-slate-200">
+                <button class="px-3 py-1 text-xs font-bold bg-blue-50 text-blue-600 rounded-md">Hari Ini</button>
+                <button class="px-3 py-1 text-xs font-bold text-slate-500 hover:text-slate-700">Minggu Ini</button>
+                <button class="px-3 py-1 text-xs font-bold text-slate-500 hover:text-slate-700">Bulan Ini</button>
+            </div>
+        </div>
+
+        <!-- STAFF PERFORMANCE ASSESSMENT (New Section) -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+            <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <h3 class="font-bold text-slate-800">Penilaian Kinerja Staff (Live)</h3>
+                <span class="text-xs text-slate-500">Diperbarui realtime</span>
+            </div>
+            <table class="w-full text-left text-sm">
+                <thead class="bg-slate-50 text-slate-500 font-bold uppercase text-xs">
+                    <tr>
+                        <th class="px-6 py-4">Nama Staff</th>
+                        <th class="px-6 py-4">Status</th>
+                        <th class="px-6 py-4">Total Tiket Selesai</th>
+                        <th class="px-6 py-4">Rata-rata Durasi Layanan</th>
+                        <th class="px-6 py-4">Penilaian Sistem</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse($staffStats as $staff)
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="px-6 py-4 font-bold text-slate-800 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs uppercase">{{ substr($staff->name, 0, 2) }}</div>
+                            {{ $staff->name }}
+                        </td>
+                        <td class="px-6 py-4">
+                            @if($staff->status_label === 'Active')
+                                <span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">Online</span>
+                            @else
+                                <span class="px-2 py-1 rounded-full bg-slate-100 text-slate-500 text-xs font-bold">Offline</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 font-mono font-bold text-slate-700">{{ $staff->total_served }} Tiket</td>
+                        <td class="px-6 py-4">
+                            <span class="{{ $staff->avg_serve_time < 5 ? 'text-green-600' : ($staff->avg_serve_time < 10 ? 'text-yellow-600' : 'text-red-600') }} font-bold">
+                                {{ $staff->avg_serve_time }} Menit
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <!-- Mock Visualization -->
+                            <div class="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
+                                <div class="h-full {{ $staff->total_served > 10 ? 'bg-green-500' : 'bg-blue-500' }}" style="width: {{ min($staff->total_served * 5, 100) }}%"></div>
+                            </div>
+                            <span class="text-[10px] text-slate-400 mt-1 block">{{ $staff->total_served > 10 ? 'Excellent' : 'Good' }}</span>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="px-6 py-8 text-center text-slate-400">Belum ada data staff aktif.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
         
         <!-- Stats Overview -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
