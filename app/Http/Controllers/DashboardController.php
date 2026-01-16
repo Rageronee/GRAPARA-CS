@@ -19,8 +19,7 @@ class DashboardController extends Controller
 
         $user = Auth::user();
 
-        // 1. Check for PERSISTENT ACTIVE TICKET (Calling/Serving by this user)
-        // This ensures if they refresh, they don't lose the ticket.
+        // 1. Check for PERSISTENT ACTIVE TICKET
         $activeQueue = Queue::where('served_by_user_id', $user->id)
             ->whereIn('status', ['calling', 'serving'])
             ->first();
@@ -33,25 +32,33 @@ class DashboardController extends Controller
         if ($user->hasRole('admin')) {
             // Admin Dashboard Data
 
-            // 1. Stats Cards
+            // Filter Logic
+            $filter = request('filter', 'today');
+            $dateQuery = match ($filter) {
+                'week' => [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()],
+                'month' => [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()],
+                default => [Carbon::today(), Carbon::today()->endOfDay()] // 'today'
+            };
+
+            // 1. Stats Cards (Filtered)
             $stats = [
-                'total_today' => Queue::whereDate('created_at', Carbon::today())->count(),
-                // Pending is ANYONE waiting, not just complaints
+                'total_today' => Queue::whereBetween('created_at', $dateQuery)->count(),
                 'pending_complaints' => Queue::where('status', 'waiting')->count(),
                 'staff_active' => User::whereIn('role', ['cs', 'manager'])->count(),
-                'completed_today' => Queue::whereDate('completed_at', Carbon::today())->count(),
+                'completed_today' => Queue::whereBetween('completed_at', $dateQuery)->count(),
             ];
 
-            // 2. Incoming Reports (Recent tickets - SHOW ALL Waiting)
+            // 2. Incoming Reports (Top 5 Priority > Oldest) - DISPLAY ONLY
             $incomingReports = Queue::where('status', 'waiting')
-                ->orderBy('created_at', 'asc') // FIFO (First In First Out)
-                ->take(10)
+                ->orderBy('service_id', 'desc') // Priority Services First
+                ->orderBy('created_at', 'asc') // First In First Out
+                ->take(5)
                 ->get();
 
             // 3. Live Queue Status (Active counters)
             $liveStatus = Service::with([
                 'queues' => function ($q) {
-                    $q->where('status', 'calling')->orWhere('status', 'waiting');
+                    $q->where('status', 'calling')->orWhere('status', 'serving');
                 }
             ])->get();
 
@@ -66,47 +73,49 @@ class DashboardController extends Controller
             // 5. Staff Performance Metrics (For Admin Assessment)
             $staffStats = User::whereIn('role', ['cs', 'manager'])
                 ->withCount([
-                    'servedTickets as total_served' => function ($q) {
-                        $q->where('status', 'completed');
+                    'servedTickets as total_served' => function ($q) use ($dateQuery) {
+                        $q->where('status', 'completed')->whereBetween('completed_at', $dateQuery);
                     }
                 ])
                 ->get()
-                ->map(function ($staff) {
-                    // Calculate Average Serve Time (in minutes)
+                ->map(function ($staff) use ($dateQuery) {
+                    // Calculate Average Serve Time (in minutes) based on Filter
                     $tickets = Queue::where('served_by_user_id', $staff->id)
-                        ->whereNotNull('called_at')
                         ->whereNotNull('completed_at')
+                        ->whereBetween('completed_at', $dateQuery)
                         ->get();
 
                     $totalDuration = 0;
                     foreach ($tickets as $t) {
-                        $totalDuration += Carbon::parse($t->completed_at)->diffInMinutes(Carbon::parse($t->called_at));
+                        if ($t->called_at) {
+                            $totalDuration += Carbon::parse($t->completed_at)->diffInMinutes(Carbon::parse($t->called_at));
+                        }
                     }
 
                     $staff->avg_serve_time = $tickets->count() > 0 ? round($totalDuration / $tickets->count(), 1) : 0;
-                    $staff->status_label = $tickets->where('created_at', '>=', Carbon::today())->count() > 0 ? 'Active' : 'Offline';
+                    $staff->status_label = Queue::where('served_by_user_id', $staff->id)->whereIn('status', ['calling', 'serving'])->exists() ? 'Active' : 'Offline';
+
+                    // Add Average Rating
+                    $staff->avg_rating = $tickets->whereNotNull('rating')->avg('rating') ?? 0;
+
                     return $staff;
                 });
 
-            return view('admin.dashboard', compact('stats', 'incomingReports', 'liveStatus', 'historyLogs', 'staffStats'));
+            return view('admin.dashboard', compact('stats', 'incomingReports', 'liveStatus', 'historyLogs', 'staffStats', 'filter'));
+        }
 
-        } elseif ($user->hasRole('cs')) {
-            // CS View
-            $complaints = Queue::where('status', 'waiting')
-                ->orderBy('service_id', 'desc') // Tech > Regular
+        if ($user->hasRole('cs')) {
+            // ... CS Logic (Same as before) ...
+            $complaints = Queue::where('status', 'waiting') // Removed service_id restriction to show all ticket types
+                ->orderBy('service_id', 'desc')
                 ->orderBy('created_at', 'asc')
                 ->get();
 
-            // Fetch History for Active Customer (If serving)
-            $activeQueue = session('queue') ?? Queue::where('served_by_user_id', $user->id)
-                ->whereIn('status', ['calling', 'serving'])
-                ->first();
-
-            $customerHistory = [];
+            // Fetch active ticket history if exists
+            $customerHistory = null;
             if ($activeQueue) {
-                // Find by User ID or Name
-                $query = Queue::where('id', '!=', $activeQueue->id)
-                    ->where('status', 'completed');
+                // Find history for this customer (by name or phone, or user_id)
+                $query = Queue::where('status', 'completed')->whereNotNull('staff_response');
 
                 if ($activeQueue->user_id) {
                     $query->where('user_id', $activeQueue->user_id);
@@ -114,12 +123,16 @@ class DashboardController extends Controller
                     $query->where('customer_name', $activeQueue->customer_name);
                 }
 
-                $customerHistory = $query->orderBy('created_at', 'desc')->take(5)->get();
+                // Get ALL history, we will limit in View (implied by "View All" button request)
+                // But for performance, let's take 20.
+                $customerHistory = $query->orderBy('created_at', 'desc')->take(20)->get();
             }
 
             return view('cs.dashboard', compact('complaints', 'activeQueue', 'customerHistory'));
         } elseif ($user->hasRole('manager')) {
             return view('manager.dashboard');
+        }
+
         // Customer Role: Check for Unrated Tickets
         $unratedTicket = Queue::where('user_id', $user->id)
             ->where('status', 'completed')
@@ -128,8 +141,8 @@ class DashboardController extends Controller
             ->first();
 
         if ($unratedTicket) {
-             session()->now('rating_request', $unratedTicket);
-             return view('welcome');
+            session()->now('rating_request', $unratedTicket);
+            return view('welcome');
         }
 
         return redirect('/');
