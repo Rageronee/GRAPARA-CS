@@ -76,6 +76,30 @@ class QueueController extends Controller
         return back()->with('queue', $queue)->with('message', 'Memanggil nomor ' . $queue->ticket_number);
     }
 
+    // CS: Auto Call Logic (Priority > Time)
+    public function callAuto(Request $request)
+    {
+        $user = Auth::user();
+
+        // Logic: Prioritize Service 3 (Tech) > 2 (Teller) > 1 (CS), then Oldest First
+        $queue = Queue::where('status', 'waiting')
+            ->orderBy('service_id', 'desc')
+            ->orderBy('created_at', 'asc')
+            ->first();
+
+        if (!$queue) {
+            return back()->with('error', 'Tidak ada antrian menunggu saat ini.');
+        }
+
+        $queue->update([
+            'status' => 'calling',
+            'served_by_user_id' => $user->id,
+            'called_at' => now(),
+        ]);
+
+        return back()->with('queue', $queue)->with('message', 'Auto-Call Berhasil: ' . $queue->ticket_number);
+    }
+
     // ADMIN/CS: Direct Call Specific Ticket (Cherry Picking)
     public function callSpecific(Queue $queue)
     {

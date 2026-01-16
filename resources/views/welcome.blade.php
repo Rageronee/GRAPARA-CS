@@ -518,16 +518,20 @@
                 </div>
 
                 <!-- Login Form -->
-                <form x-show="authType === 'login'" action="{{ route('login.post') }}" method="POST" class="space-y-4">
+                <form x-show="authType === 'login'" action="{{ route('login.post') }}" method="POST" class="space-y-4" @submit="loading = true">
                     @csrf
                     <div>
                         <input type="text" name="username" value="{{ old('username') }}" placeholder="Username"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
                         @error('username') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
-                    <div>
-                        <input type="password" name="password" placeholder="Password"
+                    <div x-data="{ show: false }" class="relative">
+                        <input :type="show ? 'text' : 'password'" name="password" placeholder="Password"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+                        <button type="button" @click="show = !show" class="absolute right-4 top-3.5 text-slate-400 hover:text-slate-600">
+                             <svg x-show="!show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                             <svg x-show="show" style="display: none;" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
+                        </button>
                     </div>
                     <button
                         class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-600/20 transition">MASUK
@@ -535,7 +539,7 @@
                 </form>
 
                 <!-- Register Form -->
-                <form x-show="authType === 'register'" action="{{ route('register') }}" method="POST" class="space-y-4"
+                <form x-show="authType === 'register'" action="{{ route('register') }}" method="POST" class="space-y-4" @submit="loading = true"
                     style="display: none;">
                     @csrf
                     <div>
@@ -548,9 +552,13 @@
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition">
                         @error('username') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
-                    <div>
-                        <input type="password" name="password" placeholder="Password"
+                    <div x-data="{ show: false }" class="relative">
+                        <input :type="show ? 'text' : 'password'" name="password" placeholder="Password"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition">
+                        <button type="button" @click="show = !show" class="absolute right-4 top-3.5 text-slate-400 hover:text-slate-600">
+                             <svg x-show="!show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                             <svg x-show="show" style="display: none;" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
+                        </button>
                         <p class="text-[10px] text-slate-500 mt-1 ml-1 flex items-center gap-1">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

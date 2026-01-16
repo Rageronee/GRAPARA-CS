@@ -8,15 +8,15 @@
     },
     "routes": [
         {
+            "handle": "filesystem"
+        },
+        {
             "src": "/grapara.png",
             "dest": "/public/grapara.png"
         },
         {
             "src": "/grapara.ico",
             "dest": "/public/grapara.ico"
-        },
-        {
-            "handle": "filesystem"
         },
         {
             "src": "/build/(.*)",

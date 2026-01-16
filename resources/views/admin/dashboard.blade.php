@@ -237,6 +237,16 @@
 
             <!-- Right: Incoming Reports -->
             <div class="space-y-6">
+                <!-- Auto Call Button -->
+                <form action="{{ route('cs.call_auto') }}" method="POST">
+                    @csrf
+                    <button class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-500/30 transition transform hover:scale-[1.02] flex items-center justify-center gap-3">
+                        <span class="p-1 bg-white/20 rounded-full">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+                        </span>
+                        PANGGIL ANTRIAN (AUTO)
+                    </button>
+                </form>
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden sticky top-24">
                     <div class="px-6 py-5 border-b border-slate-100 bg-red-50/30 flex justify-between items-center">
                         <div>
