@@ -35,43 +35,48 @@ Route::post('/queue/ticket', [QueueController::class, 'store'])->name('queue.sto
 Route::get('/queue/{queue}', [QueueController::class, 'show'])->name('queue.show');
 
 Route::get('/debug-test', function () {
+    $report = [
+        'environment' => app()->environment(),
+        'php_version' => phpversion(),
+        'config_session_driver' => config('session.driver'), // Should be 'database'
+        'config_view_path' => config('view.compiled'),       // Should be '/tmp'
+        'ssl_cert_path' => env('MYSQL_ATTR_SSL_CA') ?: 'Auto-Detect',
+    ];
+
     try {
-        // 1. Check File Write Permission (Should fail on Vercel unless /tmp)
-        $path = storage_path('framework/testing_write.txt');
+        // 1. Check Database WRITE Permission
+        \DB::beginTransaction();
         try {
-            file_put_contents($path, 'test');
-            $writeStatus = "Writable (Warning: Storage is writable? Should be Read-Only on Vercel)";
-            unlink($path);
+            $user = new \App\Models\User();
+            $user->name = 'Test Write';
+            $user->username = 'test_write_' . time();
+            $user->password = 'password';
+            $user->save();
+            $report['database_write'] = "SUCCESS (ID: {$user->id})";
         } catch (\Exception $e) {
-            $writeStatus = "Read-Only (Expected on Vercel): " . $e->getMessage();
+            $report['database_write'] = "FAILED: " . $e->getMessage();
+        }
+        \DB::rollBack();
+
+        // 2. Check Sessions Table Existence
+        try {
+            $count = \DB::table('sessions')->count();
+            $report['sessions_table'] = "EXISTS (Rows: $count)";
+        } catch (\Exception $e) {
+            $report['sessions_table'] = "MISSING/ERROR: " . $e->getMessage();
         }
 
-        // 2. Check Session
-        session(['test_key' => 'Hello Vercel']);
-        $sessionStatus = session('test_key') === 'Hello Vercel' ? "Working" : "Failed";
+        // 3. Check Session Writing
+        try {
+            session(['debug_test' => 'working']);
+            $report['session_write'] = session('debug_test') === 'working' ? "SUCCESS" : "FAILED (Read verification failed)";
+        } catch (\Exception $e) {
+            $report['session_write'] = "FATAL: " . $e->getMessage();
+        }
 
-        // 3. Check Database
-        \DB::connection()->getPdo();
-        $dbStatus = "Connected to " . \DB::connection()->getDatabaseName();
-
-        // 4. Check View Cache Path
-        $viewPath = config('view.compiled');
-
-        return response()->json([
-            'environment' => app()->environment(),
-            'storage_path_write' => $writeStatus,
-            'session_driver' => config('session.driver'),
-            'session_status' => $sessionStatus,
-            'database_status' => $dbStatus,
-            'ssl_cert_path' => env('MYSQL_ATTR_SSL_CA'),
-            'view_compiled_path' => $viewPath,
-            'php_version' => phpversion(),
-        ]);
     } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'CRITICAL ERROR',
-            'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ], 500);
+        $report['critical_error'] = $e->getMessage();
     }
+
+    return response()->json($report);
 });
