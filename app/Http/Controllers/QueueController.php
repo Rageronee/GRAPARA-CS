@@ -111,6 +111,23 @@ class QueueController extends Controller
         return back()->with('message', 'Tiket ' . $queue->ticket_number . ' selesai.');
     }
 
+    // User: Cancel Ticket (Batalkan)
+    public function cancel(Queue $queue)
+    {
+        if (Auth::id() !== $queue->user_id)
+            return back()->with('error', 'Akses ditolak.');
+        if ($queue->status !== 'waiting')
+            return back()->with('error', 'Tiket sudah diproses.');
+
+        $queue->update([
+            'status' => 'skipped',
+            'completed_at' => now(),
+            'staff_response' => 'Dibatalkan oleh pengguna.'
+        ]);
+
+        return back()->with('message', 'Tiket berhasil dibatalkan.');
+    }
+
     // API/Ajax for User History
     public function history()
     {

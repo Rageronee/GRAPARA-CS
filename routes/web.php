@@ -28,6 +28,7 @@ Route::middleware(['auth'])->group(function () {
 
     // User History
     Route::get('/queue/history', [QueueController::class, 'history'])->name('queue.history');
+    Route::post('/queue/{queue}/cancel', [QueueController::class, 'cancel'])->name('queue.cancel');
 });
 
 // Public Queue Routes

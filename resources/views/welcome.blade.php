@@ -57,15 +57,18 @@
           }
       }" x-init="if({{ Auth::check() && Auth::user()->role === 'customer' ? 'true' : 'false' }}) fetchHistory()">
 
-    <!-- Global Loader -->
+    <!-- Global Loader (Seamless) -->
     <div x-show="loading"
-        class="fixed inset-0 z-[60] bg-white/80 backdrop-blur-sm flex items-center justify-center transition-opacity"
+        class="fixed inset-0 z-[100] bg-white/60 backdrop-blur-[4px] flex items-center justify-center transition-opacity duration-300"
         x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" style="display: none;">
-        <div class="flex flex-col items-center gap-4">
-            <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-            <p class="text-blue-600 font-bold animate-pulse">Memuat...</p>
+        <div class="flex flex-col items-center gap-4 bg-white/80 p-6 rounded-2xl shadow-xl border border-white/50">
+            <div class="relative">
+                 <div class="w-12 h-12 border-4 border-blue-100 rounded-full"></div>
+                 <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+            </div>
+            <p class="text-slate-800 font-bold animate-pulse text-xs tracking-wider">PLEASE WAIT...</p>
         </div>
     </div>
 
@@ -76,7 +79,7 @@
                 <!-- Logo -->
                 <div class="flex items-center gap-3 cursor-pointer" @click="window.location.reload()">
                     <div class="h-10 w-10 flex items-center justify-center">
-                        <img src="{{ asset('grapari.png') }}" alt="Logo" class="h-10 w-10 object-contain">
+                        <img src="{{ asset('grapara.png') }}" alt="Logo" class="h-10 w-10 object-contain">
                     </div>
                     <div>
                         <h1 class="text-xl font-bold text-slate-900 leading-none">Grapara</h1>
@@ -118,7 +121,7 @@
                                     <a href="{{ url('/dashboard') }}"
                                         class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-xs font-bold shadow-lg shadow-blue-500/30 transition">DASHBOARD</a>
                                     <!-- Admin Logout Button -->
-                                    <form action="{{ route('logout') }}" method="POST">
+                                    <form action="{{ route('logout') }}" method="POST" @submit="loading = true">
                                         @csrf
                                         <button class="bg-red-50 text-red-600 hover:bg-red-100 p-2 rounded-full transition" title="Logout">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
@@ -126,7 +129,7 @@
                                     </form>
                                 </div>
                             @else
-                                <form action="{{ route('logout') }}" method="POST">
+                                <form action="{{ route('logout') }}" method="POST" @submit="loading = true">
                                     @csrf
                                     <button
                                         class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold transition">Logout</button>
@@ -600,6 +603,15 @@
                                 :class="{'text-green-600 bg-green-50': item.status === 'completed', 'text-yellow-600 bg-yellow-50': item.status !== 'completed'}"
                                 class="px-3 py-1 rounded-full text-xs font-bold uppercase"
                                 x-text="item.status === 'completed' ? 'Selesai' : 'Proses'"></span>
+                                
+                                <template x-if="item.status === 'waiting'">
+                                    <form :action="`/queue/${item.id}/cancel`" method="POST" @submit="loading = true" class="ml-2">
+                                        @csrf
+                                        <button class="bg-red-50 text-red-600 hover:bg-red-100 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide border border-red-100 transition">
+                                            Batalkan
+                                        </button>
+                                    </form>
+                                </template>
                         </div>
                         <p class="text-sm text-slate-800 font-medium mb-4"
                             x-text="item.issue_detail || 'Layanan Reguler'"></p>
