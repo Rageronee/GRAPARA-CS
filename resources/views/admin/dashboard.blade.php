@@ -29,7 +29,7 @@
     <nav class="bg-white border-b border-slate-200 sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
-                <!-- ... existing logo ... -->
+                <!-- Logo -->
                 <div class="flex items-center gap-3">
                     <div class="h-10 w-10 bg-white rounded-lg flex items-center justify-center p-1">
                         <img src="{{ asset('grapara.png') }}" alt="Logo" class="h-full w-full object-contain">
@@ -47,7 +47,7 @@
                         <p class="text-xs text-slate-500">Logged in as</p>
                         <p class="text-sm font-bold text-slate-900">{{ Auth::user()->name }}</p>
                     </div>
-                     <!-- ... existing Logout ... -->
+                     <!-- Logout -->
                      <form method="POST" action="{{ route('logout') }}" @submit="loading = true">
                         @csrf
                         <button class="text-slate-500 hover:text-red-600 transition ml-4" title="Logout">
@@ -88,7 +88,7 @@
                         <th class="px-6 py-4">Status</th>
                         <th class="px-6 py-4">Total Tiket Selesai</th>
                         <th class="px-6 py-4">Rata-rata Durasi Layanan</th>
-                        <th class="px-6 py-4">Penilaian Sistem</th>
+                        <th class="px-6 py-4">Rating User</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -112,16 +112,20 @@
                             </span>
                         </td>
                         <td class="px-6 py-4">
-                            <!-- Mock Visualization -->
-                            <div class="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
-                                <div class="h-full {{ $staff->total_served > 10 ? 'bg-green-500' : 'bg-blue-500' }}" style="width: {{ min($staff->total_served * 5, 100) }}%"></div>
-                            </div>
-                            <span class="text-[10px] text-slate-400 mt-1 block">{{ $staff->total_served > 10 ? 'Excellent' : 'Good' }}</span>
+                            @if($staff->avg_rating > 0)
+                                <div class="flex items-center gap-1">
+                                    <span class="font-bold text-slate-900">{{ number_format($staff->avg_rating, 1) }}</span>
+                                    <svg class="w-4 h-4 text-yellow-500 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                    <span class="text-xs text-slate-400">/ 5.0</span>
+                                </div>
+                            @else
+                                <span class="text-slate-400 text-xs">-</span>
+                            @endif
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-8 text-center text-slate-400">Belum ada data staff aktif.</td>
+                        <td colspan="5" class="px-6 py-12 text-center text-slate-400">Belum ada data kinerja staff.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -273,87 +277,64 @@
 
             </div>
 
-            <!-- Right: Incoming Reports -->
-            <div class="space-y-6">
-                <!-- Auto Call Button -->
-                <form action="{{ route('cs.call_auto') }}" method="POST">
-                    @csrf
-                    <button class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-500/30 transition transform hover:scale-[1.02] flex items-center justify-center gap-3">
-                        <span class="p-1 bg-white/20 rounded-full">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
-                        </span>
-                        PANGGIL ANTRIAN (AUTO)
-                    </button>
-                </form>
+             <!-- Right: Incoming Reports (Static List) -->
+             <div class="space-y-6">
+                <!-- Auto Call Hidden/Removed logic here as per user request to remove 'Auto Call' button for Admin -->
+                
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden sticky top-24">
                     <div class="px-6 py-5 border-b border-slate-100 bg-red-50/30 flex justify-between items-center">
                         <div>
                             <h2 class="text-lg font-bold text-slate-900">Laporan Masuk</h2>
-                            <p class="text-xs text-slate-500">Permintaan penanganan terbaru</p>
+                            <p class="text-xs text-slate-500">5 Antrian Teratas</p>
                         </div>
-                        <span class="bg-white border border-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded-lg animate-pulse">Live</span>
+                        <span class="bg-white border border-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded-lg animate-pulse">Monitoring</span>
                     </div>
                     
                     <div class="divide-y divide-slate-50 max-h-[600px] overflow-y-auto">
                         @forelse($incomingReports as $report)
-                            <!-- Ticket Card -->
-                            <form action="{{ route('queue.call_specific', $report->id) }}" method="POST" class="block">
-                                @csrf
-                                <button type="submit" class="w-full text-left group relative overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
-                                    
-                                    <!-- Priority Highlighting -->
-                                    <div class="{{ $report->service_id == 3 ? 'bg-red-50 border-red-200 hover:bg-red-100 hover:border-red-300' : ($report->service_id == 2 ? 'bg-emerald-50 border-emerald-200 hover:bg-emerald-100' : 'bg-white border-slate-100 hover:bg-blue-50 hover:border-blue-200') }} 
-                                                p-5 rounded-2xl border shadow-sm relative z-10">
+                            <!-- Ticket Card (Static) -->
+                             <div class="p-5 relative overflow-hidden group hover:bg-slate-50 transition">
                                         
-                                        <!-- Header: Code & Time -->
-                                        <div class="flex justify-between items-center mb-3">
-                                            <div class="flex items-center gap-2">
-                                                @php
-                                                    $serviceCode = match($report->service_id) {
-                                                        1 => 'A',
-                                                        2 => 'B',
-                                                        3 => 'C',
-                                                        default => '?'
-                                                    };
-                                                @endphp
-                                                <div class="{{ $report->service_id == 3 ? 'bg-red-600 text-white' : ($report->service_id == 2 ? 'bg-emerald-600 text-white' : 'bg-blue-600 text-white') }} 
-                                                            w-8 h-8 rounded-lg flex items-center justify-center font-bold text-lg shadow-md">
-                                                    {{ $serviceCode }}
-                                                </div>
-                                                <span class="font-mono font-bold text-slate-700 text-lg tracking-tight">{{ $report->ticket_number }}</span>
-                                            </div>
-                                            <div class="text-right">
-                                                <span class="block text-[10px] font-bold uppercase tracking-wider {{ $report->created_at->diffInMinutes() > 15 ? 'text-red-500 animate-pulse' : 'text-slate-400' }}">
-                                                    {{ $report->created_at->format('H:i') }}
-                                                </span>
-                                            </div>
-                                        </div>
+                                <!-- Priority Overlay Highlighting -->
+                                <div class="absolute left-0 top-0 bottom-0 w-1 {{ $report->service_id == 3 ? 'bg-red-500' : 'bg-blue-300' }}"></div>
 
-                                        <!-- Content -->
-                                        <div class="mb-3">
-                                            @if($report->service_id == 3)
-                                                <div class="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide mb-2">
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                                                    Priority Concern
-                                                </div>
-                                            @endif
-                                            <p class="text-sm font-bold text-slate-900 leading-snug line-clamp-2">"{{ $report->issue_detail }}"</p>
-                                            <p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                                {{ $report->customer_name }}
-                                            </p>
+                                <!-- Header: Code & Time -->
+                                <div class="flex justify-between items-center mb-3">
+                                    <div class="flex items-center gap-2">
+                                        @php
+                                            $serviceCode = match($report->service_id) {
+                                                1 => 'A',
+                                                2 => 'B',
+                                                3 => 'C',
+                                                default => '?'
+                                            };
+                                        @endphp
+                                        <div class="{{ $report->service_id == 3 ? 'bg-red-600 text-white' : ($report->service_id == 2 ? 'bg-emerald-600 text-white' : 'bg-blue-600 text-white') }} 
+                                                    w-8 h-8 rounded-lg flex items-center justify-center font-bold text-lg shadow-md">
+                                            {{ $serviceCode }}
                                         </div>
-
-                                        <!-- Action Indicator -->
-                                        <div class="pt-3 border-t {{ $report->service_id == 3 ? 'border-red-200' : 'border-slate-100' }} flex justify-between items-center">
-                                            <span class="text-[10px] font-bold text-slate-400 uppercase">Click to Serve</span>
-                                            <div class="w-6 h-6 rounded-full {{ $report->service_id == 3 ? 'bg-red-200 text-red-700' : 'bg-slate-100 text-slate-500' }} flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                                            </div>
-                                        </div>
+                                        <span class="font-mono font-bold text-slate-700 text-lg tracking-tight">{{ $report->ticket_number }}</span>
                                     </div>
-                                </button>
-                            </form>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                                        {{ $report->created_at->format('H:i') }}
+                                    </span>
+                                </div>
+
+                                <!-- Content -->
+                                <div class="mb-1">
+                                    @if($report->service_id == 3)
+                                        <div class="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide mb-2">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                            Priority
+                                        </div>
+                                    @endif
+                                    <p class="text-sm font-bold text-slate-900 leading-snug line-clamp-2">"{{ $report->issue_detail }}"</p>
+                                    <p class="text-xs text-slate-500 mt-2 flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                        {{ $report->customer_name }}
+                                    </p>
+                                </div>
+                            </div>
                         @empty
                             <div class="p-10 text-center text-slate-400">
                                 <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -362,9 +343,6 @@
                                 <p class="text-sm">Semua layanan terkendali.</p>
                             </div>
                         @endforelse
-                    </div>
-                    <div class="p-4 bg-slate-50 border-t border-slate-100 text-center">
-                        <a href="{{ url('/cs') }}" class="text-sm font-bold text-blue-600 hover:text-blue-700">Masuk workspace CS &rarr;</a>
                     </div>
                 </div>
             </div>
