@@ -79,5 +79,44 @@ Route::get('/debug-test', function () {
         $report['critical_error'] = $e->getMessage();
     }
 
-    return response()->json($report);
+// Seeder Route for Vercel
+Route::get('/seed-users', function () {
+    try {
+        // 1. CS User
+        \App\Models\User::updateOrCreate(
+            ['username' => 'afnan'],
+            [
+                'name' => 'Afnan (CS)',
+                'email' => 'afnan@grapara.com',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => 'cs'
+            ]
+        );
+
+        // 2. Manager User
+        \App\Models\User::updateOrCreate(
+            ['username' => 'faris'],
+            [
+                'name' => 'Faris (Manager)',
+                'email' => 'faris@grapara.com',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => 'manager'
+            ]
+        );
+
+        // 3. Admin User
+        \App\Models\User::updateOrCreate(
+            ['username' => 'admin'],
+            [
+                'name' => 'Administrator',
+                'email' => 'admin@grapara.com',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => 'admin'
+            ]
+        );
+
+        return "Users Seeded Successfully! <br> afnan/password (CS) <br> faris/password (Manager) <br> admin/password (Admin)";
+    } catch (\Exception $e) {
+        return "Seeding Failed: " . $e->getMessage();
+    }
 });

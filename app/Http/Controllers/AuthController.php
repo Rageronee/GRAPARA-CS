@@ -23,19 +23,27 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            // Admins/Staff go to Dashboard, Customers stay on landing page (or user dashboard)
-            if (Auth::user()->role === 'customer') {
-                return redirect('/')->with('message', 'Login berhasil! Silakan ambil antrian.');
-            }
-            return redirect()->intended('dashboard');
+        // Check if user exists first
+        $user = User::where('username', $credentials['username'])->first();
+
+        if (!$user) {
+            return redirect('/?action=login')->withErrors([
+                'login_error' => 'Username tidak ditemukan.',
+            ])->withInput();
         }
 
-        // Return to home with error to reopen modal
-        return redirect('/?action=login')->withErrors([
-            'login_error' => 'Username atau password salah.',
-        ])->withInput();
+        if (!Auth::attempt($credentials)) {
+            return redirect('/?action=login')->withErrors([
+                'login_error' => 'Password salah.',
+            ])->withInput();
+        }
+
+        $request->session()->regenerate();
+        // Admins/Staff go to Dashboard, Customers stay on landing page (or user dashboard)
+        if (Auth::user()->role === 'customer') {
+            return redirect('/')->with('message', 'Login berhasil! Silakan ambil antrian.');
+        }
+        return redirect()->intended('dashboard');
     }
 
     public function register(Request $request)
