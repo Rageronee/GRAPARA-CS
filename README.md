@@ -1,73 +1,111 @@
-# Grapara Modern (Laravel 11)
+# 🌐 Grapara Modern (Telkomcel Halu & Indihomie Siber)
 
-Ini adalah versi upgrade dari aplikasi Customer Service Grapara, dibangun menggunakan **Laravel 11** dan **Tailwind CSS**.
+**Implementasi Basis Data - Enhanced and Perfected By [Muhammad Afnan Risandi](https://mafnanrisandi-portfolio.vercel.app/)**
 
-## Fitur Baru
+![Grapara Modern Banner](https://img.shields.io/badge/Status-Production-success?style=for-the-badge) ![Laravel](https://img.shields.io/badge/Laravel-11-red?style=for-the-badge&logo=laravel) ![Tailwind](https://img.shields.io/badge/Tailwind-4-blue?style=for-the-badge&logo=tailwindcss) ![TiDB](https://img.shields.io/badge/TiDB-Serverless-pink?style=for-the-badge&logo=tidb) ![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?style=for-the-badge&logo=vercel)
 
-- **Modern UI**: Menggunakan Tailwind CSS + Glassmorphism aesthetic.
-- **Secure Auth**: Sistem login aman dengan hashing password (Anti SQL Injection).
-- **Role Management**: Dashboard terpisah untuk Admin, CS, dan Manager.
-- **Smart Queue**: Sistem antrian digital (A-001, B-001) dengan status realtime.
+Aplikasi manajemen antrian dan layanan Customer Service modern dengan sentuhan humor ("Plesetan"), fitur keamanan tingkat lanjut, dan integrasi database serverless.
 
-## 🚀 Cara Menjalankan (PENTING)
+---
 
-Karena proses instalasi otomatis memakan waktu (download dependencies), ikuti langkah ini:
+## ✨ Fitur Unggulan
 
-### 1. Pastikan Instalasi Selesai
+### 1. 🎨 Modern & Parody Branding
 
-Tunggu hingga perintah `composer create-project` di terminal selesai sepenuhnya. Folder `vendor` harus ada.
+- **UI Glassmorphism**: Desain antarmuka transparan dan futuristik menggunakan Tailwind CSS.
+- **Parody Products**: Layanan unggulan **"Telkomcel Halu"** dan **"Indihomie Siber"**.
+- **Interactive FAQ**: Bagian tanya jawab dengan animasi accordion.
 
-### 2. Setup Database
+### 2. 🛡️ Advanced Security
 
-1. Buka XAMPP/MySQL, buat database baru bernama: `grapara_modern`.
-2. Edit file `.env` di dalam folder `grapara-modern`:
+- **Strict Password Policy**: Registrasi mewajibkan password minimal 8 karakter.
+- **Validation Feedback**: Pesan error realtime pada form input yang salah.
+- **Anti-SQL Injection**: Menggunakan Eloquent ORM Laravel.
 
-   ```env
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=grapara_modern
-   DB_USERNAME=root
-   DB_PASSWORD=
-   ```
+### 3. ☁️ Infrastruktur Serverless (Cloud)
 
-### 3. Install Database & Data Awal
+- **Database**: Terkoneksi penuh ke **TiDB Cloud (Serverless MySQL)**. Data tersimpan aman di cloud, bukan di localhost.
+- **Deployment**: Siap deploy ke **Vercel** dengan konfigurasi `vercel.json` khusus.
 
-Jalankan perintah ini di terminal (di dalam folder `grapara-modern`):
+### 4. 🚀 Smart Queue System
 
-```bash
-php artisan key:generate
-php artisan migrate --seed
-```
+- **Realtime Status**: Monitoring antrian (Menunggu, Dilayani, Selesai).
+- **Dynamic Options**: Pilihan layanan spesifik (Ganti Kartu, Upgrade 4G, Lapor Gangguan).
+- **Multi-Role**:
+  - **Admin**: Monitor antrian & user.
+  - **CS/Teller**: Memanggil dan melayani antrian.
+  - **Customer**: Mengambil tiket dan melihat riwayat.
 
-*Ini akan membuat tabel dan user default (Admin, CS, Manager).*
+---
 
-### 4. Jalankan Aplikasi
+## 🛠️ Teknologi yang Digunakan
 
-Buka dua terminal:
-**Terminal 1 (Backend):**
+- **Framework**: Laravel 11.x
+- **Frontend**: Blade + Alpine.js + Tailwind CSS
+- **Database**: TiDB Cloud (MySQL Compatible)
+- **Deployment**: Vercel (Serverless Function)
 
-```bash
-php artisan serve
-```
+---
 
-**Terminal 2 (Frontend - Optional jika pakai CDN):**
+## ⚙️ Cara Instalasi (Lokal)
 
-```bash
-npm install && npm run dev
-```
+1. **Clone Repository**
 
-### 5. Login Default
+    ```bash
+    git clone https://github.com/Rageronee/GRAPARA-CS.git
+    cd GRAPARA-CS
+    ```
 
-Akses: `http://localhost:8000`
+2. **Install Dependencies**
 
-- **Admin**: `admin` / `password`
-- **CS**: `afnan` / `password`
-- **Manager**: `faris` / `password`
+    ```bash
+    composer install
+    npm install
+    ```
 
-## Struktur Kode
+3. **Setup Environment**
+    Copy file `.env.example` menjadi `.env` dan sesuaikan koneksi database Anda (bisa pakai MySQL lokal atau TiDB).
 
-- **Migrations**: `database/migrations/` (Struktur tabel modern).
-- **Controllers**: `app/Http/Controllers/` (Logika backend).
-- **Views**: `resources/views/` (Tampilan Blade + Tailwind).
-- **Routes**: `routes/web.php` (Definisi URL).
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
+
+4. **Database Migration (Wajib)**
+
+    ```bash
+    php artisan migrate
+    ```
+
+5. **Jalankan Aplikasi**
+    Buka dua terminal terpisah:
+
+    ```bash
+    # Terminal 1
+    php artisan serve
+
+    # Terminal 2
+    npm run dev
+    ```
+
+---
+
+## ☁️ Deployment ke Vercel
+
+Project ini sudah dilengkapi konfigurasi `vercel.json` untuk deployment instan.
+
+1. Import project ke Dashboard Vercel.
+2. Pilih Framework Preset: **Other**.
+3. Override Output Directory: `public`.
+4. Masukkan **Environment Variables** (Copy dari `.env` lokal Anda).
+5. Deploy! 🚀
+
+---
+
+## 👨‍💻 Credits
+
+**Developed for Tugas Implementasi Basis Data**
+- **Author**: Muhammad Afnan Risandi
+- **Portfolio**: [https://mafnanrisandi-portfolio.vercel.app](https://mafnanrisandi-portfolio.vercel.app)
+
+> "Future Connection - Connecting People with Humor and Technology."
