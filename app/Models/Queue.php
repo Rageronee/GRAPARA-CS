@@ -11,6 +11,7 @@ class Queue extends Model
 
     protected $fillable = [
         'ticket_number',
+        'user_id', // Authenticated customer ID
         'customer_name',
         'customer_phone',
         'status',

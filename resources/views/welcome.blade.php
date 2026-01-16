@@ -7,7 +7,7 @@
     <title>Grapara CS</title>
     <!-- Favicon -->
     <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌐</text></svg>">
+    <link rel="icon" href="{{ asset('grapari.ico') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -75,12 +75,8 @@
             <div class="flex items-center justify-between h-20">
                 <!-- Logo -->
                 <div class="flex items-center gap-3 cursor-pointer" @click="window.location.reload()">
-                    <div
-                        class="h-10 w-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 text-white">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
+                    <div class="h-10 w-10 flex items-center justify-center">
+                        <img src="{{ asset('grapari.png') }}" alt="Logo" class="h-10 w-10 object-contain">
                     </div>
                     <div>
                         <h1 class="text-xl font-bold text-slate-900 leading-none">Grapara</h1>

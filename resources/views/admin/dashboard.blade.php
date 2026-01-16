@@ -6,7 +6,7 @@
     <title>Admin Dashboard - Grapara</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="https://img.icons8.com/fluency/48/globe.png"> <!-- Favicon -->
+    <link rel="icon" href="{{ asset('grapari.ico') }}"> <!-- Favicon -->
     <meta http-equiv="refresh" content="30"> <!-- Auto Refresh every 30s -->
     <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
 </head>
@@ -17,8 +17,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center gap-3">
-                    <div class="bg-blue-600 text-white p-2 rounded-lg">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    <div class="h-10 w-10 bg-white rounded-lg flex items-center justify-center p-1">
+                        <img src="{{ asset('grapari.png') }}" alt="Logo" class="h-full w-full object-contain">
                     </div>
                     <span class="font-bold text-xl text-slate-900 tracking-tight">Admin<span class="text-blue-600">Panel</span></span>
                 </div>
