@@ -120,7 +120,17 @@ Route::get('/seed-users', function () {
             ]
         );
 
-        return "Users Seeded Successfully! <br> afnan/password (CS) <br> faris/password (Manager) <br> admin/password (Admin)";
+        // 4. Create Services (MANDATORY for Queue)
+        \App\Models\Service::updateOrCreate(['id' => 1], ['name' => 'Customer Service', 'code' => 'A', 'description' => 'Layanan Umum']);
+        \App\Models\Service::updateOrCreate(['id' => 2], ['name' => 'Teller', 'code' => 'B', 'description' => 'Pembayaran']);
+        \App\Models\Service::updateOrCreate(['id' => 3], ['name' => 'Priority Tech', 'code' => 'C', 'description' => 'Gangguan Teknis']);
+
+        // 5. Create Counters
+        \App\Models\Counter::updateOrCreate(['id' => 1], ['name' => 'Counter 1', 'status' => 'active']);
+        \App\Models\Counter::updateOrCreate(['id' => 2], ['name' => 'Counter 2', 'status' => 'active']);
+        \App\Models\Counter::updateOrCreate(['id' => 3], ['name' => 'Counter 3', 'status' => 'active']);
+
+        return "ALL DATA SEEDED! <br> Users: afnan, faris, admin <br> Services: CS, Teller, Tech <br> Counters: 1-3";
     } catch (\Exception $e) {
         return "Seeding Failed: " . $e->getMessage();
     }
