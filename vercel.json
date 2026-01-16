@@ -8,12 +8,12 @@
     },
     "routes": [
         {
-            "src": "/grapari.png",
-            "dest": "/public/grapari.png"
+            "src": "/grapara.png",
+            "dest": "/public/grapara.png"
         },
         {
-            "src": "/grapari.ico",
-            "dest": "/public/grapari.ico"
+            "src": "/grapara.ico",
+            "dest": "/public/grapara.ico"
         },
         {
             "handle": "filesystem"

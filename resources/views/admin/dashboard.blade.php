@@ -6,7 +6,7 @@
     <title>Admin Dashboard - Grapara</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="{{ asset('grapari.ico') }}"> <!-- Favicon -->
+    <link rel="icon" href="{{ asset('grapara.ico') }}"> <!-- Favicon -->
     <meta http-equiv="refresh" content="30"> <!-- Auto Refresh every 30s -->
     <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
 </head>
@@ -18,7 +18,7 @@
             <div class="flex justify-between h-16">
                 <div class="flex items-center gap-3">
                     <div class="h-10 w-10 bg-white rounded-lg flex items-center justify-center p-1">
-                        <img src="{{ asset('grapari.png') }}" alt="Logo" class="h-full w-full object-contain">
+                        <img src="{{ asset('grapara.png') }}" alt="Logo" class="h-full w-full object-contain">
                     </div>
                     <span class="font-bold text-xl text-slate-900 tracking-tight">Admin<span class="text-blue-600">Panel</span></span>
                 </div>
