@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Grapara Fiber & Cellular</title>
+    <title>Grapara CS</title>
     <!-- Favicon -->
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌐</text></svg>">
@@ -41,7 +41,8 @@
     class="antialiased bg-slate-50 text-slate-800 min-h-screen overflow-x-hidden selection:bg-blue-100 selection:text-blue-900"
     x-cloak x-data="{ 
           queueOpen: false, 
-          authOpen: {{ request()->has('action') || $errors->any() ? 'true' : 'false' }}, 
+          // Stop popup if logged in
+          authOpen: {{ !Auth::check() && (request()->has('action') || $errors->any()) ? 'true' : 'false' }}, 
           authType: '{{ $errors->has('name') || $errors->has('password') || $errors->has('password_confirmation') || $errors->has('username') && !$errors->has('login_error') ? 'register' : 'login' }}',
           historyOpen: false,
           historyData: [],
@@ -93,7 +94,7 @@
                         class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Produk</a>
                     <a href="#services"
                         class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Layanan</a>
-                    <a href="#" class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Bantuan</a>
+                    <a href="#faq" class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Bantuan</a>
 
                     @auth
                         <div class="flex items-center gap-4 pl-4 border-l border-slate-200">
@@ -117,8 +118,17 @@
                             </div>
 
                             @if(Auth::user()->role !== 'customer')
-                                <a href="{{ url('/dashboard') }}"
-                                    class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-xs font-bold shadow-lg shadow-blue-500/30 transition">DASHBOARD</a>
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ url('/dashboard') }}"
+                                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-xs font-bold shadow-lg shadow-blue-500/30 transition">DASHBOARD</a>
+                                    <!-- Admin Logout Button -->
+                                    <form action="{{ route('logout') }}" method="POST">
+                                        @csrf
+                                        <button class="bg-red-50 text-red-600 hover:bg-red-100 p-2 rounded-full transition" title="Logout">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                                        </button>
+                                    </form>
+                                </div>
                             @else
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf
@@ -471,7 +481,9 @@
     <!-- Footer -->
     <footer class="bg-slate-900 text-slate-400 py-8 text-center text-sm">
         <div class="max-w-7xl mx-auto px-4">
-            <p>Implementasi Basis Data. Enhanced and Perfected By <a href="https://mafnanrisandi-portfolio.vercel.app" target="_blank" class="text-blue-500 font-bold hover:text-blue-400 transition">Muhammad Afnan Risandi</a>.</p>
+            <p>Implementasi Basis Data. Enhanced and Perfected By <a href="https://mafnanrisandi-portfolio.vercel.app"
+                    target="_blank" class="text-blue-500 font-bold hover:text-blue-400 transition">Muhammad Afnan
+                    Risandi</a>.</p>
         </div>
     </footer>
 

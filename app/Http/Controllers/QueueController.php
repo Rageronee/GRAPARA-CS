@@ -33,6 +33,7 @@ class QueueController extends Controller
         $queue = Queue::create([
             'ticket_number' => $ticketNumber,
             'service_id' => $service->id,
+            'user_id' => Auth::id(), // Link to registered user
             'customer_name' => $request->customer_name ?: (Auth::check() ? Auth::user()->name : 'Guest'),
             'customer_phone' => $request->customer_phone,
             'issue_detail' => $request->issue_detail,
@@ -116,8 +117,15 @@ class QueueController extends Controller
         if (!Auth::check())
             return response()->json([]);
 
-        $queues = Queue::where('customer_name', Auth::user()->name)
-            ->orderBy('created_at', 'desc')
+        // Prioritize User ID, fallback to name match
+        $query = Queue::query();
+        if (Auth::id()) {
+            $query->where('user_id', Auth::id());
+        } else {
+            $query->where('customer_name', Auth::user()->name);
+        }
+
+        $queues = $query->orderBy('created_at', 'desc')
             ->with('service')
             ->take(10)
             ->get();
