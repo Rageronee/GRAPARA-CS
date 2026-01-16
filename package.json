@@ -3,7 +3,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build && mkdir -p dist",
+        "build": "vite build && mkdir -p dist && echo 'vercel' > dist/touch.txt",
         "dev": "vite"
     },
     "devDependencies": {
