@@ -246,25 +246,29 @@
                             </div>
                         @endif
 
-                        <!-- Customer History Section -->
+                        <!-- Customer History Section (Collapsible) -->
                         @isset($customerHistory)
-                        <div class="mb-8 border-t border-slate-100 pt-6">
-                            <h4 class="text-slate-600 font-bold mb-4 flex items-center gap-2 text-sm uppercase tracking-wide">
+                        <div class="mb-8 border-t border-slate-100 pt-6" x-data="{ showHistory: false }">
+                            <button @click="showHistory = !showHistory" class="flex items-center gap-2 text-slate-600 font-bold uppercase text-sm tracking-wide hover:text-blue-600 transition mb-4">
                                 <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 Riwayat Interaksi User
-                            </h4>
-                            <div class="space-y-3">
+                                <svg class="w-4 h-4 transition-transform duration-300" :class="showHistory ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            
+                            <div x-show="showHistory" 
+                                 x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+                                 class="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-100 max-h-60 overflow-y-auto">
                                 @forelse($customerHistory as $history)
-                                <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-xl">
-                                    <span class="font-mono font-bold text-slate-500 text-xs">{{ $history->ticket_number }}</span>
+                                <div class="flex items-start gap-4 p-3 bg-white rounded-xl shadow-sm border border-slate-100">
+                                    <span class="font-mono font-bold text-slate-500 text-xs bg-slate-100 px-2 py-1 rounded">{{ $history->ticket_number }}</span>
                                     <div class="flex-1">
                                         <p class="text-sm font-semibold text-slate-800">"{{ $history->issue_detail ?? 'Layanan Reguler' }}"</p>
                                         <p class="text-xs text-slate-500 mt-1">Solusi: <span class="italic text-slate-600">{{ $history->staff_response ?? '-' }}</span></p>
                                     </div>
-                                    <span class="text-[10px] text-slate-400">{{ $history->created_at->diffForHumans() }}</span>
+                                    <span class="text-[10px] text-slate-400 whitespace-nowrap">{{ $history->created_at->diffForHumans() }}</span>
                                 </div>
                                 @empty
-                                <p class="text-sm text-slate-400 italic">Belum ada riwayat sebelumnya.</p>
+                                <p class="text-sm text-slate-400 italic text-center">Belum ada riwayat sebelumnya.</p>
                                 @endforelse
                             </div>
                         </div>

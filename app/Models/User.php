@@ -52,4 +52,9 @@ class User extends Authenticatable
     {
         return strtolower($this->role) === strtolower($role);
     }
+
+    public function servedTickets()
+    {
+        return $this->hasMany(Queue::class, 'served_by_user_id');
+    }
 }
