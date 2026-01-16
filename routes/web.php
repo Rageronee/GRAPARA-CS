@@ -9,6 +9,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::view('/guide', 'guide')->name('guide');
+
 // Authentication Routes
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
