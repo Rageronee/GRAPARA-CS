@@ -81,6 +81,9 @@ Route::get('/debug-test', function () {
         $report['critical_error'] = $e->getMessage();
     }
 
+    return response()->json($report);
+});
+
 // Seeder Route for Vercel
 Route::get('/seed-users', function () {
     try {

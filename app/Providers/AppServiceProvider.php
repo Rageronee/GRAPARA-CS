@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
 
             // Force Serverless-Safe Configurations
-            config(['session.driver' => 'database']); // Use TiDB for sessions
+            config(['session.driver' => 'cookie']); // Safe fallback to unblock boot if DB fails
             config(['session.secure' => true]);     // Secure cookies
             config(['logging.default' => 'stderr']); // Log to Vercel console
             config(['view.compiled' => '/tmp']);    // Writable tmp dir for views
