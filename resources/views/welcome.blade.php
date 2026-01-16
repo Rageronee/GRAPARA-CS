@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Grapara CS</title>
     <!-- Favicon -->
-    <link rel="icon"
-    <link rel="icon" href="{{ asset('grapari.ico') }}">
+    <link rel="icon" href="/grapara.ico">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -784,6 +783,42 @@
             </form>
         </div>
     </div>
+
+    <!-- Rating Modal -->
+    @if(session('rating_request'))
+    <div x-data="{ rating: 0 }" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-8 text-center relative overflow-hidden animate-fade-in-up">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+            
+            <div class="w-20 h-20 bg-yellow-100 text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-yellow-100">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+            </div>
+            
+            <h2 class="text-2xl font-bold text-slate-900 mb-2">Beri Penilaian Anda</h2>
+            <p class="text-slate-500 text-sm mb-6">Bagaimana layanan Customer Service kami untuk tiket <strong>{{ session('rating_request')->ticket_number }}</strong>?</p>
+            
+            <form action="{{ route('queue.rate', session('rating_request')->id) }}" method="POST">
+                @csrf
+                <div class="flex justify-center gap-2 mb-6">
+                    <template x-for="i in 5">
+                        <button type="button" @click="rating = i" class="transition transform hover:scale-110 focus:outline-none">
+                            <svg class="w-8 h-8" :class="i <= rating ? 'text-yellow-400 fill-current' : 'text-slate-300'" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                            </svg>
+                        </button>
+                    </template>
+                </div>
+                <input type="hidden" name="rating" :value="rating">
+                
+                <textarea name="feedback" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 mb-6 focus:outline-none focus:border-blue-500 text-sm" placeholder="Tulis masukan Anda (opsional)..."></textarea>
+                
+                <button :disabled="rating === 0" :class="rating === 0 ? 'opacity-50 cursor-not-allowed' : ''" class="w-full bg-slate-900 text-white font-bold py-3 rounded-xl shadow-lg transition hover:bg-slate-800">
+                    Kirim Penilaian
+                </button>
+            </form>
+        </div>
+    </div>
+    @endif
 
     <!-- Guide Button -->
     <div class="fixed bottom-6 right-6 z-50">

@@ -120,8 +120,18 @@ class DashboardController extends Controller
             return view('cs.dashboard', compact('complaints', 'activeQueue', 'customerHistory'));
         } elseif ($user->hasRole('manager')) {
             return view('manager.dashboard');
-        } else {
-            return view('customer.dashboard');
+        // Customer Role: Check for Unrated Tickets
+        $unratedTicket = Queue::where('user_id', $user->id)
+            ->where('status', 'completed')
+            ->whereNull('rating')
+            ->orderBy('completed_at', 'desc')
+            ->first();
+
+        if ($unratedTicket) {
+             session()->now('rating_request', $unratedTicket);
+             return view('welcome');
         }
+
+        return redirect('/');
     }
 }
