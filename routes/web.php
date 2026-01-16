@@ -125,3 +125,38 @@ Route::get('/seed-users', function () {
         return "Seeding Failed: " . $e->getMessage();
     }
 });
+
+// EMERGENCY DB PATCHER (Run Once)
+Route::get('/patch-db', function () {
+    try {
+        $output = "Patching Database...<br>";
+
+        // Add 'user_id'
+        if (!Schema::hasColumn('queues', 'user_id')) {
+            Schema::table('queues', function (Illuminate\Database\Schema\Blueprint $table) {
+                $table->foreignId('user_id')->nullable()->after('ticket_number');
+            });
+            $output .= "- Added 'user_id' column.<br>";
+        }
+
+        // Add 'issue_detail'
+        if (!Schema::hasColumn('queues', 'issue_detail')) {
+            Schema::table('queues', function (Illuminate\Database\Schema\Blueprint $table) {
+                $table->text('issue_detail')->nullable()->after('customer_phone');
+            });
+            $output .= "- Added 'issue_detail' column.<br>";
+        }
+
+        // Add 'staff_response'
+        if (!Schema::hasColumn('queues', 'staff_response')) {
+            Schema::table('queues', function (Illuminate\Database\Schema\Blueprint $table) {
+                $table->text('staff_response')->nullable()->after('issue_detail');
+            });
+            $output .= "- Added 'staff_response' column.<br>";
+        }
+
+        return $output . "DONE! Database is now compatible.";
+    } catch (\Exception $e) {
+        return "Patch Failed: " . $e->getMessage();
+    }
+});
