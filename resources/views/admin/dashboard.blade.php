@@ -7,15 +7,29 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href="{{ asset('grapara.ico') }}"> <!-- Favicon -->
-    <meta http-equiv="refresh" content="30"> <!-- Auto Refresh every 30s -->
+    <meta http-equiv="refresh" content="60"> <!-- Auto Refresh every 60s -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body class="bg-slate-50 text-slate-800" x-data="{ loading: false }">
+
+    <!-- Global Loader -->
+    <div x-show="loading" class="fixed inset-0 z-[100] bg-white/80 backdrop-blur-md flex items-center justify-center p-4 transition" x-transition.opacity style="display: none;">
+         <div class="relative w-20 h-20">
+            <div class="absolute inset-0 bg-blue-100 rounded-full animate-ping opacity-75"></div>
+            <div class="absolute inset-0 bg-white rounded-full flex items-center justify-center shadow-xl border border-blue-50">
+               <img src="{{ asset('grapara.png') }}" class="w-10 h-10 object-contain animate-pulse">
+            </div>
+            <div class="absolute -inset-1 border-4 border-blue-600/20 rounded-full"></div>
+            <div class="absolute -inset-1 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+    </div>
 
     <!-- Top Navigation -->
     <nav class="bg-white border-b border-slate-200 sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
+                <!-- ... existing logo ... -->
                 <div class="flex items-center gap-3">
                     <div class="h-10 w-10 bg-white rounded-lg flex items-center justify-center p-1">
                         <img src="{{ asset('grapara.png') }}" alt="Logo" class="h-full w-full object-contain">
@@ -24,17 +38,19 @@
                 </div>
                 
                 <div class="flex items-center gap-4">
+                    <!-- Refresh Button -->
+                    <button @click="loading = true; window.location.reload()" class="p-2 text-slate-400 hover:text-blue-600 transition rounded-full hover:bg-blue-50" title="Refresh Data">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    </button>
+
                     <div class="text-right hidden sm:block">
                         <p class="text-xs text-slate-500">Logged in as</p>
                         <p class="text-sm font-bold text-slate-900">{{ Auth::user()->name }}</p>
                     </div>
-                    <div class="h-8 w-px bg-slate-200"></div>
-                     <a href="{{ url('/') }}" class="text-slate-500 hover:text-blue-600 transition" title="Home">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                    </a>
-                    <form method="POST" action="{{ route('logout') }}">
+                     <!-- ... existing Logout ... -->
+                     <form method="POST" action="{{ route('logout') }}" @submit="loading = true">
                         @csrf
-                        <button class="text-slate-500 hover:text-red-600 transition" title="Logout">
+                        <button class="text-slate-500 hover:text-red-600 transition ml-4" title="Logout">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                         </button>
                     </form>
@@ -51,11 +67,11 @@
                 <h1 class="text-3xl font-bold text-slate-900">Performance Monitor</h1>
                 <p class="text-slate-500">Analisis Kinerja Customer Service</p>
             </div>
-            <!-- Date Filter (Mock UI) -->
+            <!-- Date Filters -->
             <div class="flex bg-white rounded-lg p-1 border border-slate-200">
-                <button class="px-3 py-1 text-xs font-bold bg-blue-50 text-blue-600 rounded-md">Hari Ini</button>
-                <button class="px-3 py-1 text-xs font-bold text-slate-500 hover:text-slate-700">Minggu Ini</button>
-                <button class="px-3 py-1 text-xs font-bold text-slate-500 hover:text-slate-700">Bulan Ini</button>
+                <a href="?filter=today" @click="loading = true" class="px-3 py-1 text-xs font-bold rounded-md transition {{ $filter === 'today' ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:text-slate-700' }}">Hari Ini</a>
+                <a href="?filter=week" @click="loading = true" class="px-3 py-1 text-xs font-bold rounded-md transition {{ $filter === 'week' ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:text-slate-700' }}">Minggu Ini</a>
+                <a href="?filter=month" @click="loading = true" class="px-3 py-1 text-xs font-bold rounded-md transition {{ $filter === 'month' ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:text-slate-700' }}">Bulan Ini</a>
             </div>
         </div>
 
