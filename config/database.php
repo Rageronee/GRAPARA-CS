@@ -59,7 +59,7 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                (PHP_VERSION_ID >= 80500 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA') ?: (file_exists(base_path('storage/isrgrootx1.pem')) ? base_path('storage/isrgrootx1.pem') : null),
+                (PHP_VERSION_ID >= 80500 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA') ?: (file_exists(base_path('storage/isrgrootx1.pem')) ? base_path('storage/isrgrootx1.pem') : '/etc/pki/tls/certs/ca-bundle.crt'),
                 PDO::ATTR_EMULATE_PREPARES => true,
             ]) : [],
         ],

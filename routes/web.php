@@ -41,6 +41,7 @@ Route::get('/debug-test', function () {
         'config_session_driver' => config('session.driver'), // Should be 'database'
         'config_view_path' => config('view.compiled'),       // Should be '/tmp'
         'ssl_cert_path' => env('MYSQL_ATTR_SSL_CA') ?: 'Auto-Detect',
+        'db_config_options' => \DB::connection()->getConfig('options'),
     ];
 
     try {
