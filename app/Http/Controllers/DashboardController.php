@@ -61,27 +61,31 @@ class DashboardController extends Controller
                 ->orderBy('completed_at', 'desc')
                 ->take(10)
                 ->with(['server', 'service'])
+                ->get();
+
             // 5. Staff Performance Metrics (For Admin Assessment)
             $staffStats = User::whereIn('role', ['cs', 'manager'])
-                ->withCount(['servedTickets as total_served' => function($q) {
-                    $q->where('status', 'completed');
-                }])
+                ->withCount([
+                    'servedTickets as total_served' => function ($q) {
+                        $q->where('status', 'completed');
+                    }
+                ])
                 ->get()
-                ->map(function($staff) {
-                     // Calculate Average Serve Time (in minutes)
-                     $tickets = Queue::where('served_by_user_id', $staff->id)
+                ->map(function ($staff) {
+                    // Calculate Average Serve Time (in minutes)
+                    $tickets = Queue::where('served_by_user_id', $staff->id)
                         ->whereNotNull('called_at')
                         ->whereNotNull('completed_at')
                         ->get();
-                     
-                     $totalDuration = 0;
-                     foreach($tickets as $t) {
-                         $totalDuration += Carbon::parse($t->completed_at)->diffInMinutes(Carbon::parse($t->called_at));
-                     }
-                     
-                     $staff->avg_serve_time = $tickets->count() > 0 ? round($totalDuration / $tickets->count(), 1) : 0;
-                     $staff->status_label = $tickets->where('created_at', '>=', Carbon::today())->count() > 0 ? 'Active' : 'Offline';
-                     return $staff;
+
+                    $totalDuration = 0;
+                    foreach ($tickets as $t) {
+                        $totalDuration += Carbon::parse($t->completed_at)->diffInMinutes(Carbon::parse($t->called_at));
+                    }
+
+                    $staff->avg_serve_time = $tickets->count() > 0 ? round($totalDuration / $tickets->count(), 1) : 0;
+                    $staff->status_label = $tickets->where('created_at', '>=', Carbon::today())->count() > 0 ? 'Active' : 'Offline';
+                    return $staff;
                 });
 
             return view('admin.dashboard', compact('stats', 'incomingReports', 'liveStatus', 'historyLogs', 'staffStats'));
@@ -97,19 +101,19 @@ class DashboardController extends Controller
             $activeQueue = session('queue') ?? Queue::where('served_by_user_id', $user->id)
                 ->whereIn('status', ['calling', 'serving'])
                 ->first();
-            
+
             $customerHistory = [];
             if ($activeQueue) {
                 // Find by User ID or Name
                 $query = Queue::where('id', '!=', $activeQueue->id)
                     ->where('status', 'completed');
-                
+
                 if ($activeQueue->user_id) {
                     $query->where('user_id', $activeQueue->user_id);
                 } else {
                     $query->where('customer_name', $activeQueue->customer_name);
                 }
-                
+
                 $customerHistory = $query->orderBy('created_at', 'desc')->take(5)->get();
             }
 
