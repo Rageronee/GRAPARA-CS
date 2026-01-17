@@ -5,9 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\QueueController;
 use App\Http\Controllers\AuthController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [DashboardController::class, 'landing'])->name('home');
 
 Route::view('/guide', 'guide')->name('guide');
 
@@ -27,6 +25,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/queue/call/{queue}', [QueueController::class, 'callSpecific'])->name('queue.call_specific');
     Route::post('/queue/call-auto', [QueueController::class, 'callAuto'])->name('cs.call_auto');
     Route::post('/cs/complete/{queue}', [QueueController::class, 'complete'])->name('cs.complete');
+
+    Route::post('/queue/{queue}/rate', [QueueController::class, 'rate'])->name('queue.rate');
+
     Route::get('/cs', [DashboardController::class, 'index']); // Alias
 
     // User History
