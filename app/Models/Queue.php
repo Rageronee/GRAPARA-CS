@@ -22,7 +22,9 @@ class Queue extends Model
         'staff_response', // CS feedback
         'called_at',
         'served_at',
-        'completed_at'
+        'completed_at',
+        'rating',
+        'feedback'
     ];
 
     protected $casts = [
