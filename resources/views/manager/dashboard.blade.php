@@ -36,7 +36,7 @@
                 <!-- Logo -->
                 <div class="flex items-center gap-3">
                     <div class="h-10 w-10 flex items-center justify-center">
-                        <img src="{{ asset('grapara.png') }}" alt="Logo" class="h-9 w-9 object-contain">
+                        <img src="{{ asset('grapara.png') }}" alt="Logo" class="h-9 w-9 object-contain" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/Rageronee/GRAPARA-CS/main/public/grapara.png'">
                     </div>
                     <span class="font-bold text-xl text-slate-900 tracking-tight">Manager<span class="text-blue-600">Panel</span></span>
                 </div>

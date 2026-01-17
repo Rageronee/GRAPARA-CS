@@ -4,7 +4,8 @@
             <!-- Logo & Brand -->
             <div class="flex items-center gap-3">
                 <div class="h-10 w-10 flex items-center justify-center">
-                    <img src="{{ asset('grapara.png') }}" class="h-9 w-9 object-contain" alt="Grapara Logo">
+                    <img src="{{ asset('grapara.png') }}" class="h-9 w-9 object-contain" alt="Grapara Logo"
+                        onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/Rageronee/GRAPARA-CS/main/public/grapara.png'">
                 </div>
                 <span class="font-bold text-xl text-slate-900 tracking-tight hidden sm:block">Grapara <span
                         class="text-blue-600">CS</span></span>

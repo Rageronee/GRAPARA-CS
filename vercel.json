@@ -11,14 +11,6 @@
             "handle": "filesystem"
         },
         {
-            "src": "/grapara.png",
-            "dest": "/public/grapara.png"
-        },
-        {
-            "src": "/grapara.ico",
-            "dest": "/public/grapara.ico"
-        },
-        {
             "src": "/build/(.*)",
             "dest": "/public/build/$1"
         },
