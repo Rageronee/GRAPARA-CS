@@ -123,7 +123,7 @@ Project ini sudah dilengkapi konfigurasi `vercel.json` untuk deployment instan.
 
 1. Import project ke Dashboard Vercel.
 2. Pilih Framework Preset: **Other**.
-3. Override Output Directory: `public`.
+3. **PENTING**: Biarkan **Output Directory** kosong (Default). ❌ Jangan diubah ke `public`.
 4. Masukkan **Environment Variables** (Copy dari `.env` lokal Anda).
 5. Deploy! 🚀
 
