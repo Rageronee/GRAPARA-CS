@@ -134,17 +134,6 @@ class DashboardController extends Controller
         }
 
         // Customer Role: Check for Unrated Tickets
-        $unratedTicket = Queue::where('user_id', $user->id)
-            ->where('status', 'completed')
-            ->whereNull('rating')
-            ->orderBy('completed_at', 'desc')
-            ->first();
-
-        if ($unratedTicket) {
-            session()->now('rating_request', $unratedTicket);
-            return view('welcome');
-        }
-
         return redirect('/');
     }
     // Landing Page Logic (Home)
@@ -160,18 +149,6 @@ class DashboardController extends Controller
         // 2. If Staff (Admin/CS/Manager), redirect to Dashboard
         if (in_array($user->role, ['admin', 'cs', 'manager'])) {
             return redirect()->route('dashboard');
-        }
-
-        // 3. If Customer, check for Unrated Tickets
-        $unratedTicket = Queue::where('user_id', $user->id)
-            ->where('status', 'completed')
-            ->whereNull('rating')
-            ->orderBy('completed_at', 'desc')
-            ->first();
-
-        // Flash session for modal if exists
-        if ($unratedTicket) {
-            session()->now('rating_request', $unratedTicket);
         }
 
         return view('welcome');
