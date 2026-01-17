@@ -127,7 +127,7 @@ class QueueController extends Controller
     public function complete(Request $request, Queue $queue)
     {
         $request->validate([
-            'staff_response' => 'nullable|string'
+            'staff_response' => 'required|string|min:3'
         ]);
 
         $queue->update([

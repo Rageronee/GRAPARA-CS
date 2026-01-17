@@ -47,6 +47,19 @@ Aplikasi manajemen antrian dan layanan Customer Service modern dengan sentuhan h
 
 ---
 
+## 🔐 Akun Demo (Login Info)
+
+Silakan gunakan akun berikut untuk mencoba fitur dashboard (Password untuk semua akun: `password`):
+
+| Username | Role | Akses Dashboard |
+| :--- | :--- | :--- |
+| **super** | Manager | **Manager Dashboard** (Analisis Kinerja & Monitoring) |
+| **cs1** | CS Staff | **CS Dashboard** (Melayani Antrian & Input Tiket) |
+| **cs2** | CS Staff | **CS Dashboard** (Melayani Antrian & Input Tiket) |
+| **cs3** | CS Staff | **CS Dashboard** (Melayani Antrian & Input Tiket) |
+
+---
+
 ## ⚙️ Cara Instalasi (Lokal)
 
 1. **Clone Repository**
@@ -64,7 +77,21 @@ Aplikasi manajemen antrian dan layanan Customer Service modern dengan sentuhan h
     ```
 
 3. **Setup Environment**
-    Copy file `.env.example` menjadi `.env` dan sesuaikan koneksi database Anda (bisa pakai MySQL lokal atau TiDB).
+    Copy file `.env.example` menjadi `.env` dan sesuaikan koneksi database Anda (bisa pakai MySQL lokal, TiDB, atau SQLite).
+
+    **Opsi Terbaik untuk Localhost (Cepat & Tanpa Lag): SQLite**
+    Gunakan konfigurasi ini di `.env`:
+
+    ```env
+    DB_CONNECTION=sqlite
+    # DB_HOST=127.0.0.1
+    # DB_PORT=3306
+    # DB_DATABASE=laravel
+    # DB_USERNAME=root
+    # DB_PASSWORD=
+    ```
+
+    *Pastikan file `database/database.sqlite` sudah ada (bisa dibuat kosong).*
 
     ```bash
     cp .env.example .env
@@ -105,6 +132,7 @@ Project ini sudah dilengkapi konfigurasi `vercel.json` untuk deployment instan.
 ## 👨‍💻 Credits
 
 **Developed for Tugas Implementasi Basis Data**
+
 - **Author**: Muhammad Afnan Risandi
 - **Portfolio**: [https://mafnanrisandi-portfolio.vercel.app](https://mafnanrisandi-portfolio.vercel.app)
 

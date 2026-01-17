@@ -19,6 +19,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Protected Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/cs/updates', [DashboardController::class, 'updates'])->name('cs.updates');
 
     // CS Routes
     Route::post('/cs/next', [QueueController::class, 'next'])->name('cs.next');
@@ -92,50 +93,57 @@ Route::get('/debug-test', function () {
 // Seeder Route for Vercel
 Route::get('/seed-users', function () {
     try {
-        // 1. CS User
-        \App\Models\User::updateOrCreate(
-            ['username' => 'afnan'],
-            [
-                'name' => 'Afnan (CS)',
-                'email' => 'afnan@grapara.com',
-                'password' => \Illuminate\Support\Facades\Hash::make('password'),
-                'role' => 'cs'
-            ]
-        );
+        // --- NEW REQUESTED ACCOUNTS ---
 
-        // 2. Manager User
+        // 1. Super Admin
         \App\Models\User::updateOrCreate(
-            ['username' => 'faris'],
+            ['username' => 'super'],
             [
-                'name' => 'Faris (Manager)',
-                'email' => 'faris@grapara.com',
+                'name' => 'Super Admin Manager',
+                'email' => 'super@grapara.com',
                 'password' => \Illuminate\Support\Facades\Hash::make('password'),
                 'role' => 'manager'
             ]
         );
 
-        // 3. Admin User
+        // 2. Manager
         \App\Models\User::updateOrCreate(
-            ['username' => 'admin'],
+            ['username' => 'manager'],
             [
-                'name' => 'Administrator',
-                'email' => 'admin@grapara.com',
+                'name' => 'Manager Operasional',
+                'email' => 'manager@grapara.com',
                 'password' => \Illuminate\Support\Facades\Hash::make('password'),
-                'role' => 'admin'
+                'role' => 'manager'
             ]
         );
 
-        // 4. Create Services (MANDATORY for Queue)
+        // 3. CS Team (CS1, CS2, CS3)
+        $cs_accounts = ['cs1', 'cs2', 'cs3'];
+        foreach ($cs_accounts as $cs) {
+            \App\Models\User::updateOrCreate(
+                ['username' => $cs],
+                [
+                    'name' => 'Staff ' . strtoupper($cs),
+                    'email' => $cs . '@grapara.com',
+                    'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                    'role' => 'cs'
+                ]
+            );
+        }
+
+        // --- EXISTING SETUP (Services & Counters) ---
+
+        // Services
         \App\Models\Service::updateOrCreate(['id' => 1], ['name' => 'Customer Service', 'code' => 'A', 'description' => 'Layanan Umum']);
         \App\Models\Service::updateOrCreate(['id' => 2], ['name' => 'Teller', 'code' => 'B', 'description' => 'Pembayaran']);
         \App\Models\Service::updateOrCreate(['id' => 3], ['name' => 'Priority Tech', 'code' => 'C', 'description' => 'Gangguan Teknis']);
 
-        // 5. Create Counters
+        // Counters
         \App\Models\Counter::updateOrCreate(['id' => 1], ['name' => 'Counter 1', 'status' => 'active']);
         \App\Models\Counter::updateOrCreate(['id' => 2], ['name' => 'Counter 2', 'status' => 'active']);
         \App\Models\Counter::updateOrCreate(['id' => 3], ['name' => 'Counter 3', 'status' => 'active']);
 
-        return "ALL DATA SEEDED! <br> Users: afnan, faris, admin <br> Services: CS, Teller, Tech <br> Counters: 1-3";
+        return "ALL DATA SEEDED! <br> ACCOUNTS ADDED: <br> - super (pass: password) <br> - manager (pass: password) <br> - cs1, cs2, cs3 (pass: password)";
     } catch (\Exception $e) {
         return "Seeding Failed: " . $e->getMessage();
     }

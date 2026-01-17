@@ -29,7 +29,7 @@ class DashboardController extends Controller
             session()->now('queue', $activeQueue);
         }
 
-        if ($user->hasRole('admin')) {
+        if ($user->hasRole('admin') || $user->hasRole('manager')) {
             // Admin Dashboard Data
 
             // Filter Logic
@@ -101,13 +101,13 @@ class DashboardController extends Controller
                     return $staff;
                 });
 
-            return view('admin.dashboard', compact('stats', 'incomingReports', 'liveStatus', 'historyLogs', 'staffStats', 'filter'));
+            $viewName = $user->hasRole('manager') ? 'manager.dashboard' : 'admin.dashboard';
+            return view($viewName, compact('stats', 'incomingReports', 'liveStatus', 'historyLogs', 'staffStats', 'filter'));
         }
 
         if ($user->hasRole('cs')) {
             // ... CS Logic (Same as before) ...
             $complaints = Queue::where('status', 'waiting') // Removed service_id restriction to show all ticket types
-                ->orderBy('service_id', 'desc')
                 ->orderBy('created_at', 'asc')
                 ->get();
 
@@ -128,9 +128,18 @@ class DashboardController extends Controller
                 $customerHistory = $query->orderBy('created_at', 'desc')->take(20)->get();
             }
 
-            return view('cs.dashboard', compact('complaints', 'activeQueue', 'customerHistory'));
-        } elseif ($user->hasRole('manager')) {
-            return view('manager.dashboard');
+            // Personalized Daily Stats
+            $todayTickets = Queue::where('served_by_user_id', $user->id)
+                ->whereDate('completed_at', now()->today())
+                ->get();
+
+            $myDailyStats = [
+                'total_served' => $todayTickets->count(),
+                'avg_rating' => $todayTickets->whereNotNull('rating')->avg('rating') ?? 0,
+                'avg_time' => 0 // Placeholder, could be calculated if needed
+            ];
+
+            return view('cs.dashboard', compact('complaints', 'myDailyStats', 'customerHistory'));
         }
 
         // Customer Role: Check for Unrated Tickets
@@ -152,5 +161,62 @@ class DashboardController extends Controller
         }
 
         return view('welcome');
+    }
+
+    // AJAX Endpoint for Smooth Polling
+    public function updates()
+    {
+        if (!Auth::check() || !Auth::user()->hasRole('cs')) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $user = Auth::user();
+
+        // 1. Re-check Active Queue
+        $activeQueue = Queue::where('served_by_user_id', $user->id)
+            ->whereIn('status', ['calling', 'serving'])
+            ->first();
+
+        // Ensure session is synced for the view rendering
+        if ($activeQueue) {
+            session()->now('queue', $activeQueue);
+        }
+
+        // 2. Fetch Waiting Queues
+        $complaints = Queue::where('status', 'waiting')
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        // 3. Fetch Customer History if Active
+        $customerHistory = null;
+        if ($activeQueue) {
+            $query = Queue::where('status', 'completed')->whereNotNull('staff_response');
+            if ($activeQueue->user_id) {
+                $query->where('user_id', $activeQueue->user_id);
+            } else {
+                $query->where('customer_name', $activeQueue->customer_name);
+            }
+            $customerHistory = $query->orderBy('created_at', 'desc')->take(20)->get();
+        }
+
+        // 4. Calculate Stats
+        $todayTickets = Queue::where('served_by_user_id', $user->id)
+            ->whereDate('completed_at', now()->today())
+            ->get();
+
+        $stats = [
+            'total_served' => $todayTickets->count(),
+            'avg_rating' => $todayTickets->whereNotNull('rating')->avg('rating') ?? 0,
+        ];
+
+        // 5. Render Partials
+        $html_queue = view('components.cs.queue-list', compact('complaints'))->render();
+        $html_active = view('components.cs.active-ticket', compact('customerHistory'))->render();
+
+        return response()->json([
+            'stats' => $stats,
+            'html_queue' => $html_queue,
+            'html_active' => $html_active,
+        ]);
     }
 }

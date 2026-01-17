@@ -12,6 +12,7 @@ return new class extends Migration {
             $table->string('ticket_number'); // A-001
             $table->string('customer_name')->nullable();
             $table->string('customer_phone')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade'); // Link to registered user
             $table->enum('status', ['waiting', 'calling', 'serving', 'completed', 'skipped'])->default('waiting');
 
             $table->foreignId('service_id')->constrained('services');
