@@ -6,7 +6,7 @@
     <title>Manager Dashboard - Grapara</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="{{ asset('grapara.png') }}">
+    <link rel="icon" href="{{ asset('grapara.ico') }}">
     <!-- Note: Keeping meta refresh as requested for admin view, 
          or should we upgrade to AJAX? User didn't ask for manager refresh fix yet, 
          but 'perbaiki ini juga' implies general fix. 

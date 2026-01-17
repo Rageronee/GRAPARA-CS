@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap"
         rel="stylesheet">
-    <link rel="icon" href="/grapara.ico">
+    <link rel="icon" href="{{ asset('grapara.ico') }}">
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
