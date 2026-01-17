@@ -23,26 +23,38 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        // Check if user exists first
+        // 1. Check Username
         $user = User::where('username', $credentials['username'])->first();
 
         if (!$user) {
             return redirect('/?action=login')->withErrors([
-                'login_error' => 'Username tidak ditemukan.',
+                'login_error' => 'Username tidak ditemukan!',
+                'username' => 'Username tidak terdaftar.'
             ])->withInput();
         }
 
-        if (!Auth::attempt($credentials)) {
+        // 2. Check Password
+        if (!Hash::check($credentials['password'], $user->password)) {
             return redirect('/?action=login')->withErrors([
-                'login_error' => 'Password salah.',
+                'login_error' => 'Password yang Anda masukkan salah!',
+                'password' => 'Password salah.'
             ])->withInput();
         }
 
+        // 3. Login
+        Auth::login($user);
         $request->session()->regenerate();
+
         // Admins/Staff go to Dashboard, Customers stay on landing page (or user dashboard)
         if (Auth::user()->role === 'customer') {
             return redirect('/')->with('message', 'Login berhasil! Silakan ambil antrian.');
         }
+
+        // Redirect to specific dashboard based on role (redundancy check, but good for UX)
+        if (Auth::user()->hasRole('manager')) {
+            return redirect()->route('dashboard'); // Will load manager view
+        }
+
         return redirect()->intended('dashboard');
     }
 
