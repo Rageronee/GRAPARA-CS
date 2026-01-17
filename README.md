@@ -60,7 +60,16 @@ Silakan gunakan akun berikut untuk mencoba fitur dashboard (Password untuk semua
 
 ---
 
-## ⚙️ Cara Instalasi (Lokal)
+## ⚙️ Cara Instalasi & Menjalankan (Lokal)
+
+### Persiapan (Prerequisites)
+
+- PHP 8.2+
+- Composer
+- Node.js & NPM
+- SQLite (untuk database lokal yang ringan)
+
+### Langkah-langkah
 
 1. **Clone Repository**
 
@@ -76,44 +85,61 @@ Silakan gunakan akun berikut untuk mencoba fitur dashboard (Password untuk semua
     npm install
     ```
 
-3. **Setup Environment**
-    Copy file `.env.example` menjadi `.env` dan sesuaikan koneksi database Anda (bisa pakai MySQL lokal, TiDB, atau SQLite).
+3. **Setup Database (SQLite)**
+    Aplikasi ini dioptimalkan untuk menggunakan SQLite di environment lokal agar cepat dan ringan.
 
-    **Opsi Terbaik untuk Localhost (Cepat & Tanpa Lag): SQLite**
-    Gunakan konfigurasi ini di `.env`:
+    - Copy `.env.example` ke `.env`:
 
-    ```env
-    DB_CONNECTION=sqlite
-    # DB_HOST=127.0.0.1
-    # DB_PORT=3306
-    # DB_DATABASE=laravel
-    # DB_USERNAME=root
-    # DB_PASSWORD=
-    ```
+      ```bash
+      cp .env.example .env
+      ```
 
-    *Pastikan file `database/database.sqlite` sudah ada (bisa dibuat kosong).*
+    - Buka file `.env` dan pastikan konfigurasi database seperti ini:
+
+      ```env
+      DB_CONNECTION=sqlite
+      # DB_HOST=127.0.0.1 (Matikan/Comment konfigurasi MySQL)
+      ```
+
+    - Buat file database kosong:
+      *Windows (PowerShell):*
+
+      ```powershell
+      New-Item -ItemType File database/database.sqlite
+      ```
+
+      *Mac/Linux:*
+
+      ```bash
+      touch database/database.sqlite
+      ```
+
+4. **Kunci & Migrasi**
+    Generate key aplikasi dan isi database dengan data awal (Seeding):
 
     ```bash
-    cp .env.example .env
     php artisan key:generate
+    php artisan migrate:fresh --seed
     ```
 
-4. **Database Migration (Wajib)**
-
-    ```bash
-    php artisan migrate
-    ```
+    *> Perintah `migrate:fresh --seed` akan mereset database dan membuat akun demo otomatis.*
 
 5. **Jalankan Aplikasi**
-    Buka dua terminal terpisah:
+    Buka dua terminal:
+
+    **Terminal 1 (Backend Server):**
 
     ```bash
-    # Terminal 1
     php artisan serve
+    ```
 
-    # Terminal 2
+    **Terminal 2 (Frontend Build/Watch):**
+
+    ```bash
     npm run dev
     ```
+
+    Buka browser di: [http://localhost:8000](http://localhost:8000)
 
 ---
 

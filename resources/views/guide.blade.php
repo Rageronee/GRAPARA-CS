@@ -113,9 +113,29 @@
 
         </div>
 
-        <div class="mt-16 text-center">
+        <div class="mt-16 text-center border-t border-slate-200 pt-8">
+            <h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4">Lingkungan Sistem (System
+                Environment)</h3>
+            <div class="inline-flex gap-4 flex-wrap justify-center">
+                <span
+                    class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-mono border border-slate-200">
+                    📂 Database: <strong>SQLite (Local)</strong> / TiDB (Cloud)
+                </span>
+                <span
+                    class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-mono border border-slate-200">
+                    ⚡ Framework: <strong>Laravel 11.x</strong>
+                </span>
+                <span
+                    class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-mono border border-slate-200">
+                    🎨 Frontend: <strong>Tailwind CSS 4</strong>
+                </span>
+            </div>
+            <p class="text-xs text-slate-400 mt-4 italic">
+                *Simulasi ini berjalan menggunakan database lokal SQLite untuk performa maksimal tanpa latensi internet.
+            </p>
+
             <a href="{{ url('/') }}"
-                class="inline-flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-full font-bold shadow-2xl hover:bg-slate-800 transition transform hover:-translate-y-1">
+                class="inline-flex items-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-full font-bold shadow-2xl hover:bg-slate-800 transition transform hover:-translate-y-1 mt-8">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z">
