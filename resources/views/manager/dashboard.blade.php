@@ -18,7 +18,7 @@
 <body class="bg-slate-50 text-slate-800" x-data="{ loading: false }">
 
     <!-- Global Loader -->
-    <div x-show="loading" class="fixed inset-0 z-[100] bg-white/80 backdrop-blur-md flex items-center justify-center p-4 transition" x-transition.opacity style="display: none;">
+    <div x-show="loading" class="fixed inset-0 z-100 bg-white/80 backdrop-blur-md flex items-center justify-center p-4 transition" x-transition.opacity style="display: none;">
          <div class="relative w-20 h-20">
             <div class="absolute inset-0 bg-blue-100 rounded-full animate-ping opacity-75"></div>
             <div class="absolute inset-0 bg-white rounded-full flex items-center justify-center shadow-xl border border-blue-50">
@@ -36,7 +36,7 @@
                 <!-- Logo -->
                 <div class="flex items-center gap-3">
                     <div class="h-10 w-10 flex items-center justify-center">
-                        <img src="{{ asset('grapara.png') }}" alt="Logo" class="h-9 w-9 object-contain" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/Rageronee/GRAPARA-CS/main/public/grapara.png'">
+                        <img src="{{ asset('grapara.png') }}" alt="Logo" class="h-9 w-9 object-contain">
                     </div>
                     <span class="font-bold text-xl text-slate-900 tracking-tight">Manager<span class="text-blue-600">Panel</span></span>
                 </div>
@@ -238,17 +238,18 @@
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="border-b border-slate-100 text-slate-400 text-xs uppercase tracking-wider">
-                                    <th class="px-8 py-4 font-semibold">Tiket / Waktu</th>
-                                    <th class="px-6 py-4 font-semibold">Pelanggan & Keluhan</th>
-                                    <th class="px-6 py-4 font-semibold">Solusi Staff</th>
-                                    <th class="px-6 py-4 font-semibold">Status</th>
+                                    <th class="px-6 py-4 font-semibold text-slate-500">Tiket / Waktu</th>
+                                    <th class="px-6 py-4 font-semibold text-slate-500">Pelanggan & Keluhan</th>
+                                    <th class="px-6 py-4 font-semibold text-slate-500">Solusi Staff</th>
+                                    <th class="px-6 py-4 font-semibold text-slate-500">Rating & Ulasan</th>
+                                    <th class="px-6 py-4 font-semibold text-slate-500">Status</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-50">
                                 @forelse($historyLogs as $log)
                                     <tr class="hover:bg-slate-50/50 transition">
                                         <td class="px-8 py-4">
-                                            <span class="block font-mono font-bold text-slate-700 bg-slate-100 inline-block px-2 rounded mb-1">{{ $log->ticket_number }}</span>
+                                            <span class="inline-block font-mono font-bold text-slate-700 bg-slate-100 px-2 rounded mb-1">{{ $log->ticket_number }}</span>
                                             <span class="block text-xs text-slate-400">{{ $log->completed_at->format('H:i') }}</span>
                                         </td>
                                         <td class="px-6 py-4 max-w-xs">
@@ -260,7 +261,24 @@
                                                 <div class="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] font-bold">{{ substr($log->server->name ?? '?', 0, 1) }}</div>
                                                 <span class="text-xs font-bold text-slate-600">{{ $log->server->name ?? 'System' }}</span>
                                             </div>
-                                            <p class="text-xs text-slate-600 bg-blue-50/50 p-2 rounded-lg border border-blue-50 italic">"{{ $log->staff_response }}"</p>
+                                            <div class="bg-blue-50/50 p-3 rounded-xl border border-blue-50">
+                                                <p class="text-xs text-slate-600 italic">"{{ $log->staff_response }}"</p>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 max-w-xs">
+                                           @if($log->rating)
+                                                <div class="flex items-center gap-1 mb-1">
+                                                    <span class="font-bold text-slate-900">{{ $log->rating }}</span>
+                                                    <svg class="w-3 h-3 text-yellow-500 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                                </div>
+                                                @if($log->feedback)
+                                                    <p class="text-xs text-slate-500 line-clamp-2">"{{ $log->feedback }}"</p>
+                                                @else
+                                                    <span class="text-[10px] text-slate-300 italic">Tanpa ulasan</span>
+                                                @endif
+                                           @else
+                                                <span class="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Belum dinilai</span>
+                                           @endif
                                         </td>
                                         <td class="px-6 py-4">
                                             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-100">
@@ -271,7 +289,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="px-8 py-10 text-center text-slate-400">Belum ada riwayat interaksi selesai.</td>
+                                        <td colspan="5" class="px-8 py-10 text-center text-slate-400">Belum ada riwayat interaksi selesai.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

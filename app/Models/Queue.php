@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\QueueStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,6 +19,7 @@ class Queue extends Model
         'service_id',
         'served_by_user_id',
         'counter_id',
+        'category_id', // New categorization
         'issue_detail', // Complaint details
         'staff_response', // CS feedback
         'called_at',
@@ -28,6 +30,7 @@ class Queue extends Model
     ];
 
     protected $casts = [
+        'status' => QueueStatus::class,
         'called_at' => 'datetime',
         'served_at' => 'datetime',
         'completed_at' => 'datetime',
@@ -48,8 +51,19 @@ class Queue extends Model
         return $this->belongsTo(Counter::class);
     }
 
+    public function category()
+    {
+        return $this->belongsTo(ComplaintCategory::class);
+    }
+
+    public function logs()
+    {
+        return $this->hasMany(QueueLog::class);
+    }
+
     public function scopeWaiting($query)
     {
-        return $query->where('status', 'waiting');
+        // Use Enum for strict query
+        return $query->where('status', QueueStatus::WAITING);
     }
 }

@@ -14,7 +14,7 @@
 <body class="bg-slate-50 text-slate-800" x-data="{ loading: false }">
 
     <!-- Global Loader -->
-    <div x-show="loading" class="fixed inset-0 z-[100] bg-white/80 backdrop-blur-md flex items-center justify-center p-4 transition" x-transition.opacity style="display: none;">
+    <div x-show="loading" class="fixed inset-0 z-100 bg-white/80 backdrop-blur-md flex items-center justify-center p-4 transition" x-transition.opacity style="display: none;">
          <div class="relative w-20 h-20">
             <div class="absolute inset-0 bg-blue-100 rounded-full animate-ping opacity-75"></div>
             <div class="absolute inset-0 bg-white rounded-full flex items-center justify-center shadow-xl border border-blue-50">
@@ -32,7 +32,7 @@
                 <!-- Logo -->
                 <div class="flex items-center gap-3">
                     <div class="h-10 w-10 bg-white rounded-lg flex items-center justify-center p-1">
-                        <img src="{{ asset('grapara.png') }}" alt="Logo" class="h-full w-full object-contain" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/Rageronee/GRAPARA-CS/main/public/grapara.png'">
+                        <img src="{{ asset('grapara.png') }}" alt="Logo" class="h-full w-full object-contain">
                     </div>
                     <span class="font-bold text-xl text-slate-900 tracking-tight">Admin<span class="text-blue-600">Panel</span></span>
                 </div>
@@ -244,7 +244,7 @@
                                 @forelse($historyLogs as $log)
                                     <tr class="hover:bg-slate-50/50 transition">
                                         <td class="px-8 py-4">
-                                            <span class="block font-mono font-bold text-slate-700 bg-slate-100 inline-block px-2 rounded mb-1">{{ $log->ticket_number }}</span>
+                                            <span class="block font-mono font-bold text-slate-700 bg-slate-100 px-2 rounded mb-1">{{ $log->ticket_number }}</span>
                                             <span class="block text-xs text-slate-400">{{ $log->completed_at->format('H:i') }}</span>
                                         </td>
                                         <td class="px-6 py-4 max-w-xs">

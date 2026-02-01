@@ -53,12 +53,18 @@
               if(this.historyData.length > 0) {
                  this.hasNewHistory = this.historyData.some(i => i.status === 'completed'); 
               }
+          },
+          init() {
+              if({{ Auth::check() && Auth::user()->role === 'customer' ? 'true' : 'false' }}) {
+                  this.fetchHistory();
+                  setInterval(() => this.fetchHistory(), 5000);
+              }
           }
-      }" x-init="if({{ Auth::check() && Auth::user()->role === 'customer' ? 'true' : 'false' }}) fetchHistory()">
+      }">
 
     <!-- Global Loader (Premium w/ Logo) -->
     <div x-show="loading"
-        class="fixed inset-0 z-[100] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center transition-all duration-500"
+        class="fixed inset-0 z-100 bg-white/80 backdrop-blur-md flex flex-col items-center justify-center transition-all duration-500"
         x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95"
         x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" 
@@ -69,7 +75,7 @@
             <div class="relative w-24 h-24 mb-6">
                 <div class="absolute inset-0 bg-blue-100 rounded-full animate-ping opacity-20"></div>
                 <div class="absolute inset-0 bg-white rounded-full shadow-xl flex items-center justify-center border border-slate-100 z-10">
-                    <img src="/grapara.png" alt="Loading..." class="w-14 h-14 object-contain animate-pulse" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/Rageronee/GRAPARA-CS/main/public/grapara.png'">
+                <img src="{{ asset('grapara.png') }}" alt="Loading..." class="w-14 h-14 object-contain animate-pulse">
                 </div>
                 <!-- Spinning Ring -->
                 <div class="absolute -inset-2 border-4 border-blue-600/20 rounded-full"></div>
@@ -88,7 +94,7 @@
                 <!-- Logo -->
                 <div class="flex items-center gap-3 cursor-pointer" @click="window.location.reload()">
                     <div class="h-10 w-10 flex items-center justify-center">
-                        <img src="{{ asset('grapara.png') }}" alt="Logo" class="h-10 w-10 object-contain" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/Rageronee/GRAPARA-CS/main/public/grapara.png'">
+                        <img src="{{ asset('grapara.png') }}" alt="Logo" class="h-10 w-10 object-contain">
                     </div>
                     <div>
                         <h1 class="text-xl font-bold text-slate-900 leading-none">Grapara</h1>

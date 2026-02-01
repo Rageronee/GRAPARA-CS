@@ -17,13 +17,13 @@
         </div>
     </div>
     <div
-        class="md:col-span-2 bg-gradient-to-r from-blue-600 to-indigo-600 p-4 rounded-2xl shadow-lg shadow-blue-500/20 text-white flex items-center justify-between relative overflow-hidden group">
+        class="md:col-span-2 bg-blue-600 bg-linear-to-r from-blue-600 to-indigo-600 p-4 rounded-2xl shadow-lg shadow-blue-500/20 text-white flex items-center justify-between relative overflow-hidden group">
         <div
             class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 transition group-hover:bg-white/20">
         </div>
         <div class="relative z-10">
-            <p class="font-bold text-lg">Halo, {{ Auth::user()->name }}!</p>
-            <p class="text-white/80 text-sm">Siap melayani pelanggan hari ini?</p>
+            <p class="font-bold text-lg text-white">Halo, {{ Auth::user()->name }}!</p>
+            <p class="text-blue-100 text-sm">Siap melayani pelanggan hari ini?</p>
         </div>
         <div class="h-10 w-10 bg-white/20 rounded-full flex items-center justify-center animate-pulse">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

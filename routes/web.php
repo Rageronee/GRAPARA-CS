@@ -95,41 +95,27 @@ Route::get('/seed-users', function () {
     try {
         // --- NEW REQUESTED ACCOUNTS ---
 
-        // 1. Super Admin
-        \App\Models\User::updateOrCreate(
-            ['username' => 'super'],
-            [
-                'name' => 'Super Admin Manager',
-                'email' => 'super@grapara.com',
-                'password' => \Illuminate\Support\Facades\Hash::make('password'),
-                'role' => 'manager'
-            ]
-        );
-
-        // 2. Manager
+        // 1. Manager
         \App\Models\User::updateOrCreate(
             ['username' => 'manager'],
             [
-                'name' => 'Manager Operasional',
+                'name' => 'Manager Area',
                 'email' => 'manager@grapara.com',
                 'password' => \Illuminate\Support\Facades\Hash::make('password'),
                 'role' => 'manager'
             ]
         );
 
-        // 3. CS Team (CS1, CS2, CS3)
-        $cs_accounts = ['cs1', 'cs2', 'cs3'];
-        foreach ($cs_accounts as $cs) {
-            \App\Models\User::updateOrCreate(
-                ['username' => $cs],
-                [
-                    'name' => 'Staff ' . strtoupper($cs),
-                    'email' => $cs . '@grapara.com',
-                    'password' => \Illuminate\Support\Facades\Hash::make('password'),
-                    'role' => 'cs'
-                ]
-            );
-        }
+        // 2. CS
+        \App\Models\User::updateOrCreate(
+            ['username' => 'cs'],
+            [
+                'name' => 'Customer Service',
+                'email' => 'cs@grapara.com',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => 'cs'
+            ]
+        );
 
         // --- EXISTING SETUP (Services & Counters) ---
 

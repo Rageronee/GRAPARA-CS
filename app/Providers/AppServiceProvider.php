@@ -21,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        \App\Models\Queue::observe(\App\Observers\QueueObserver::class);
+
         if ($this->app->environment('production')) {
             URL::forceScheme('https');
 
@@ -63,17 +65,42 @@ class AppServiceProvider extends ServiceProvider
                     \App\Models\Counter::create(['id' => 2, 'name' => 'Counter 2', 'status' => 'active']);
                     \App\Models\Counter::create(['id' => 3, 'name' => 'Counter 3', 'status' => 'active']);
 
-                    // Users (If empty)
-                    if (\App\Models\User::count() === 0) {
-                        \App\Models\User::create(['name' => 'Customer Service', 'username' => 'afnan', 'email' => 'afnan@grapara.com', 'password' => \Illuminate\Support\Facades\Hash::make('password'), 'role' => 'cs']);
-                        \App\Models\User::create(['name' => 'Manager Area', 'username' => 'faris', 'email' => 'faris@grapara.com', 'password' => \Illuminate\Support\Facades\Hash::make('password'), 'role' => 'manager']);
-                        \App\Models\User::create(['name' => 'Administrator', 'username' => 'admin', 'email' => 'admin@grapara.com', 'password' => \Illuminate\Support\Facades\Hash::make('password'), 'role' => 'admin']);
-                    }
+                    // Users (If empty) logic removed in favor of global auto-heal below
                 }
             } catch (\Exception $e) {
                 // Log silently to stderr so valid requests don't crash
                 error_log("Auto-Heal Error: " . $e->getMessage());
             }
+        }
+
+        // --- GLOBAL AUTO-HEAL (Runs in Local & Production) ---
+        // Ensures 'cs' and 'manager' accounts always exist
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('users')) {
+                // Ensure CS exists
+                \App\Models\User::updateOrCreate(
+                    ['username' => 'cs'],
+                    [
+                        'name' => 'Customer Service',
+                        'email' => 'cs@grapara.com',
+                        'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                        'role' => 'cs'
+                    ]
+                );
+
+                // Ensure Manager exists
+                \App\Models\User::updateOrCreate(
+                    ['username' => 'manager'],
+                    [
+                        'name' => 'Manager Area',
+                        'email' => 'manager@grapara.com',
+                        'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                        'role' => 'manager'
+                    ]
+                );
+            }
+        } catch (\Exception $e) {
+            // Log silently
         }
     }
 }

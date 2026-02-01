@@ -139,7 +139,7 @@ class DashboardController extends Controller
                 'avg_time' => 0 // Placeholder, could be calculated if needed
             ];
 
-            return view('cs.dashboard', compact('complaints', 'myDailyStats', 'customerHistory'));
+            return view('cs.dashboard', compact('complaints', 'myDailyStats', 'customerHistory', 'todayTickets'));
         }
 
         // Customer Role: Check for Unrated Tickets
@@ -217,6 +217,7 @@ class DashboardController extends Controller
             'stats' => $stats,
             'html_queue' => $html_queue,
             'html_active' => $html_active,
+            'html_history' => view('components.cs.today-history', compact('todayTickets'))->render(),
         ]);
     }
 }

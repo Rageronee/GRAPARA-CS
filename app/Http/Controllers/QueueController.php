@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Queue;
 use App\Models\Service;
 use App\Models\Counter;
+use App\Enums\QueueStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -37,7 +38,7 @@ class QueueController extends Controller
             'customer_name' => $request->customer_name ?: (Auth::check() ? Auth::user()->name : 'Guest'),
             'customer_phone' => $request->customer_phone,
             'issue_detail' => $request->issue_detail,
-            'status' => 'waiting',
+            'status' => QueueStatus::WAITING,
         ]);
 
         if (Auth::check() && Auth::user()->role === 'customer') {
@@ -58,7 +59,8 @@ class QueueController extends Controller
         $user = Auth::user();
         $serviceId = $request->input('service_id');
 
-        $queue = Queue::where('status', 'waiting')
+
+        $queue = Queue::where('status', QueueStatus::WAITING)
             ->where('service_id', $serviceId)
             ->orderBy('created_at', 'asc')
             ->first();
@@ -84,7 +86,8 @@ class QueueController extends Controller
             $user = Auth::user();
 
             // Logic: Prioritize Service 3 (Tech) > 2 (Teller) > 1 (CS), then Oldest First
-            $queue = Queue::where('status', 'waiting')
+            // Logic: Prioritize Service 3 (Tech) > 2 (Teller) > 1 (CS), then Oldest First
+            $queue = Queue::where('status', QueueStatus::WAITING)
                 ->orderBy('service_id', 'desc')
                 ->orderBy('created_at', 'asc')
                 ->first();
@@ -94,7 +97,7 @@ class QueueController extends Controller
             }
 
             $queue->update([
-                'status' => 'calling',
+                'status' => QueueStatus::CALLING,
                 'served_by_user_id' => $user->id,
                 'called_at' => now(),
             ]);
@@ -110,12 +113,12 @@ class QueueController extends Controller
     {
         $user = Auth::user();
 
-        if ($queue->status !== 'waiting') {
+        if ($queue->status !== QueueStatus::WAITING) {
             return back()->with('error', 'Tiket ini tidak dalam status menunggu.');
         }
 
         $queue->update([
-            'status' => 'calling',
+            'status' => QueueStatus::CALLING,
             'served_by_user_id' => $user->id,
             'called_at' => now(),
         ]);
@@ -131,11 +134,14 @@ class QueueController extends Controller
         ]);
 
         $queue->update([
-            'status' => 'completed',
+            'status' => QueueStatus::COMPLETED,
             'staff_response' => $request->staff_response,
             'served_at' => $queue->served_at ?? now(),
             'completed_at' => now(),
         ]);
+
+        // IMPORTANT: Clear the active queue session so the UI resets
+        session()->forget('queue');
 
         return back()->with('message', 'Tiket ' . $queue->ticket_number . ' selesai.');
     }
@@ -145,11 +151,11 @@ class QueueController extends Controller
     {
         if (Auth::id() !== $queue->user_id)
             return back()->with('error', 'Akses ditolak.');
-        if ($queue->status !== 'waiting')
+        if ($queue->status !== QueueStatus::WAITING)
             return back()->with('error', 'Tiket sudah diproses.');
 
         $queue->update([
-            'status' => 'skipped',
+            'status' => QueueStatus::SKIPPED,
             'completed_at' => now(),
             'staff_response' => 'Dibatalkan oleh pengguna.'
         ]);
@@ -186,6 +192,11 @@ class QueueController extends Controller
             'rating' => 'required|integer|min:1|max:5',
             'feedback' => 'nullable|string'
         ]);
+
+        // Allow rating only if status is COMPLETED or SKIPPED
+        if (!in_array($queue->status, [QueueStatus::COMPLETED, QueueStatus::SKIPPED])) {
+            return back()->with('error', 'Tiket belum selesai, tidak dapat memberikan nilai.');
+        }
 
         $queue->update([
             'rating' => $request->rating,

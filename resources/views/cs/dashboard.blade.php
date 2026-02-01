@@ -54,6 +54,7 @@
                 // but for simplicity we just replace.
                 if (this.$refs.queueList) this.$refs.queueList.innerHTML = data.html_queue;
                 if (this.$refs.activeTicket) this.$refs.activeTicket.innerHTML = data.html_active;
+                if (this.$refs.historyList) this.$refs.historyList.innerHTML = data.html_history;
             } catch (error) {
                 console.error('Polling failed:', error);
             } finally {
@@ -73,9 +74,13 @@
         <div class="grid lg:grid-cols-3 gap-8 items-start">
 
             <!-- LEFT: Queue List (Sticky) -->
-            <div class="lg:col-span-1" x-ref="queueList">
-                <!-- Server-side Render Initial State -->
-                <x-cs.queue-list :complaints="$complaints" />
+            <div class="lg:col-span-1 space-y-6">
+                <div x-ref="queueList">
+                    <x-cs.queue-list :complaints="$complaints" />
+                </div>
+                <div x-ref="historyList">
+                    <x-cs.today-history :todayTickets="$todayTickets" />
+                </div>
             </div>
 
             <!-- RIGHT: Active Workspace -->

@@ -27,23 +27,18 @@ class DatabaseSeeder extends Seeder
         Counter::create(['name' => 'Counter 3', 'is_active' => true]);
 
         // Create Users (Admin, CS, Manager)
-        User::create([
-            'name' => 'Super Admin',
-            'username' => 'admin',
-            'role' => 'admin',
-            'password' => Hash::make('password'),
-        ]);
+
 
         User::create([
-            'name' => 'Afnan CS',
-            'username' => 'afnan',
+            'name' => 'Customer Service',
+            'username' => 'cs',
             'role' => 'cs',
             'password' => Hash::make('password'),
         ]);
 
         User::create([
-            'name' => 'Faris Manager',
-            'username' => 'faris',
+            'name' => 'Manager Area',
+            'username' => 'manager',
             'role' => 'manager',
             'password' => Hash::make('password'),
         ]);

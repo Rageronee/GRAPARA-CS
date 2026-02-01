@@ -15,7 +15,7 @@
     </style>
 
     <!-- Auto Refresh if Waiting/Calling -->
-    @if(in_array($queue->status, ['waiting', 'calling']))
+    @if(in_array($queue->status, [\App\Enums\QueueStatus::WAITING, \App\Enums\QueueStatus::CALLING]) || in_array($queue->status->value ?? $queue->status, ['waiting', 'calling']))
         <meta http-equiv="refresh" content="5">
     @endif
 </head>
@@ -27,7 +27,7 @@
         class="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200/50 max-w-sm w-full text-center relative overflow-hidden ring-1 ring-slate-100">
 
         <!-- Decoration -->
-        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+        <div class="absolute top-0 left-0 w-full h-2 bg-blue-600 bg-linear-to-r from-blue-500 to-indigo-600"></div>
 
         <!-- LOGO -->
         <div class="mb-6 flex justify-center">
@@ -37,14 +37,14 @@
         </div>
 
         <!-- STATUS: WAITING / CALLING -->
-        @if(in_array($queue->status, ['waiting', 'calling']))
+        @if(in_array($queue->status, [\App\Enums\QueueStatus::WAITING, \App\Enums\QueueStatus::CALLING]) || in_array($queue->status->value ?? $queue->status, ['waiting', 'calling']))
 
             <h2 class="text-slate-500 uppercase tracking-widest text-xs font-bold mb-3">Nomor Antrian Anda</h2>
             <div class="text-6xl font-black text-slate-900 mb-6 font-mono tracking-tighter">
                 {{ $queue->ticket_number }}
             </div>
 
-            @if($queue->status === 'calling')
+            @if(($queue->status->value ?? $queue->status) === 'calling')
                 <div class="bg-green-50 border border-green-200 p-4 rounded-xl mb-6 animate-pulse">
                     <p class="text-green-700 font-bold text-lg">Silakan Ke Counter!</p>
                     <p class="text-green-600 text-sm">Nomor Anda sedang dipanggil.</p>
@@ -66,7 +66,7 @@
             </a>
 
             <!-- STATUS: COMPLETED (RATING) -->
-        @elseif($queue->status === 'completed' && ($queue->rating == null || $queue->rating == 0))
+        @elseif(($queue->status === \App\Enums\QueueStatus::COMPLETED || ($queue->status->value ?? $queue->status) === 'completed') && ($queue->rating == null || $queue->rating == 0))
 
                 <!-- Simplified Rating Form (Direct) -->
                 <div class="text-left w-full animate-fade-in-up">
@@ -123,7 +123,7 @@
                         </div>
 
                         <button type="submit"
-                            class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-600/20 transition transform hover:-translate-y-1 hover:shadow-2xl flex items-center justify-center gap-2">
+                            class="w-full bg-blue-600 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-600/20 transition transform hover:-translate-y-1 hover:shadow-2xl flex items-center justify-center gap-2">
                             <span>Kirim Penilaian</span>
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -141,7 +141,7 @@
             </div>
 
             <!-- STATUS: COMPLETED & RATED -->
-        @elseif($queue->status === 'completed' && $queue->rating)
+        @elseif(($queue->status === \App\Enums\QueueStatus::COMPLETED || ($queue->status->value ?? $queue->status) === 'completed') && $queue->rating)
 
         <div class="py-10">
             <div

@@ -11,10 +11,10 @@
         </div>
     @endif
 
-    @if(session('queue') && session('queue')->status == 'calling')
+    @if(session('queue') && (session('queue')->status === \App\Enums\QueueStatus::CALLING || session('queue')->status === 'calling' || (is_object(session('queue')->status) && session('queue')->status->value === 'calling')))
         <div
             class="bg-white border border-slate-200 rounded-3xl p-8 flex flex-col shadow-xl shadow-slate-200/50 relative overflow-hidden transition hover:shadow-2xl">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600">
+            <div class="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-blue-500 to-indigo-600">
             </div>
 
             <div class="flex flex-col md:flex-row justify-between items-start mb-8 gap-4">
@@ -92,8 +92,7 @@
                                 </div>
                             </div>
                         @empty
-                            <div
-                                class="text-center py-4 text-slate-400 text-xs text-center border-2 border-dashed border-slate-100 rounded-xl">
+                            <div class="text-center py-4 text-slate-400 text-xs border-2 border-dashed border-slate-100 rounded-xl">
                                 Belum ada riwayat interaksi sebelumnya.
                             </div>
                         @endforelse
