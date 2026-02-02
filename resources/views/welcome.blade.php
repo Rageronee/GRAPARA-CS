@@ -194,7 +194,7 @@
         
         <!-- Background Banner -->
         <div class="absolute inset-0 z-0 bg-slate-900">
-            <img src="/assets/img/bg.avif?v=2" 
+            <img src="https://cdn.jsdelivr.net/gh/Rageronee/GRAPARA-CS@main/public/assets/img/bg.avif" 
                  alt="Background" 
                  class="w-full h-full object-cover opacity-60 mix-blend-overlay">
             <div class="absolute inset-0 bg-linear-to-b from-slate-900/80 via-slate-900/60 to-slate-900/90"></div>
@@ -280,7 +280,7 @@
                 <div
                     class="group relative bg-white rounded-3xl p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden border border-slate-100 flex flex-col">
                     <div class="h-48 w-full overflow-hidden rounded-t-2xl mb-4 relative">
-                        <img src="/assets/img/grap.avif?v=2" 
+                        <img src="https://cdn.jsdelivr.net/gh/Rageronee/GRAPARA-CS@main/public/assets/img/grap.avif" 
                              alt="Telkomsel Halo" 
                              class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">
                         <div class="absolute inset-0 bg-linear-to-t from-white to-transparent"></div>
@@ -323,7 +323,7 @@
                 <div
                     class="group relative bg-white rounded-3xl p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden border border-slate-100 flex flex-col">
                     <div class="h-48 w-full overflow-hidden rounded-t-2xl mb-4 relative">
-                        <img src="/assets/img/fibr.avif?v=2" 
+                        <img src="https://cdn.jsdelivr.net/gh/Rageronee/GRAPARA-CS@main/public/assets/img/fibr.avif" 
                              alt="Indihome Fiber" 
                              class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">
                         <div class="absolute inset-0 bg-linear-to-t from-white to-transparent"></div>
