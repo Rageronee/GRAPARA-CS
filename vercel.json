@@ -8,12 +8,19 @@
     },
     "routes": [
         {
+            "handle": "filesystem"
+        },
+        {
             "src": "/build/(.*)",
             "dest": "/public/build/$1"
         },
         {
-            "src": "/(.*\\.(css|js|png|jpg|jpeg|gif|webp|ico|svg|woff|woff2|ttf|eot|json))",
+            "src": "/(grapara.png|grapara.ico|favicon.ico|robots.txt)",
             "dest": "/public/$1"
+        },
+        {
+            "src": "/assets/(.*)",
+            "dest": "/public/assets/$1"
         },
         {
             "src": "/((?!public/).*)",
@@ -22,7 +29,7 @@
     ],
     "env": {
         "APP_ENV": "production",
-        "APP_DEBUG": "false",
+        "APP_DEBUG": "true",
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_EVENTS_CACHE": "/tmp/events.php",
         "APP_PACKAGES_CACHE": "/tmp/packages.php",

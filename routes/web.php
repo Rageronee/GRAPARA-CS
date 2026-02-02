@@ -40,62 +40,82 @@ Route::middleware(['auth'])->group(function () {
 Route::post('/queue/ticket', [QueueController::class, 'store'])->name('queue.store');
 Route::get('/queue/{queue}', [QueueController::class, 'show'])->name('queue.show');
 
-Route::get('/debug-test', function () {
-    $report = [
-        'environment' => app()->environment(),
-        'php_version' => phpversion(),
-        'config_session_driver' => config('session.driver'),
-        'config_view_path' => config('view.compiled'),
-        'ssl_cert_path_env' => env('MYSQL_ATTR_SSL_CA'),
-        'ssl_cert_file_exists_public' => file_exists(public_path('isrgrootx1.pem')),
-        'ssl_cert_path_resolved' => file_exists(public_path('isrgrootx1.pem')) ? public_path('isrgrootx1.pem') : 'FALLBACK SYSTEM',
-        'db_config_options' => \DB::connection()->getConfig('options'),
-    ];
-
+// --- SUPABASE MIGRATOR ---
+// This route runs migrations and seeds data for the new PostgreSQL DB
+Route::get('/setup-db', function () {
     try {
-        // 1. Check Database WRITE Permission
-        \DB::beginTransaction();
-        try {
-            $user = new \App\Models\User();
-            $user->name = 'Test Write';
-            $user->username = 'test_write_' . time();
-            $user->password = 'password';
-            $user->save();
-            $report['database_write'] = "SUCCESS (ID: {$user->id})";
-        } catch (\Exception $e) {
-            $report['database_write'] = "FAILED: " . $e->getMessage();
-        }
-        \DB::rollBack();
+        $output = "<h1>Setup Database (Supabase/PostgreSQL)</h1>";
 
-        // 2. Check Sessions Table Existence
-        try {
-            $count = \DB::table('sessions')->count();
-            $report['sessions_table'] = "EXISTS (Rows: $count)";
-        } catch (\Exception $e) {
-            $report['sessions_table'] = "MISSING/ERROR: " . $e->getMessage();
+        // 1. Create Tables (Simulated Migration)
+        $output .= "<h3>1. Schema Check</h3>";
+
+        if (!Schema::hasTable('users')) {
+            Schema::create('users', function ($table) {
+                $table->id();
+                $table->string('name');
+                $table->string('username')->unique(); // 'cs', 'manager'
+                $table->string('email')->nullable();
+                $table->timestamp('email_verified_at')->nullable();
+                $table->string('password');
+                $table->string('role')->default('user'); // admin, manager, cs, user
+                $table->rememberToken();
+                $table->timestamps();
+            });
+            $output .= "✅ Created 'users' table.<br>";
         }
 
-        // 3. Check Session Writing
-        try {
-            session(['debug_test' => 'working']);
-            $report['session_write'] = session('debug_test') === 'working' ? "SUCCESS" : "FAILED (Read verification failed)";
-        } catch (\Exception $e) {
-            $report['session_write'] = "FATAL: " . $e->getMessage();
+        if (!Schema::hasTable('services')) {
+            Schema::create('services', function ($table) {
+                $table->id();
+                $table->string('name');
+                $table->string('code')->default('A');
+                $table->string('description')->nullable();
+                $table->timestamps();
+            });
+            $output .= "✅ Created 'services' table.<br>";
         }
 
-    } catch (\Exception $e) {
-        $report['critical_error'] = $e->getMessage();
-    }
+        if (!Schema::hasTable('counters')) {
+            Schema::create('counters', function ($table) {
+                $table->id();
+                $table->string('name');
+                $table->boolean('status')->default(true); // active/inactive
+                $table->timestamps();
+            });
+            $output .= "✅ Created 'counters' table.<br>";
+        }
 
-    return response()->json($report);
-});
+        if (!Schema::hasTable('queues')) {
+            Schema::create('queues', function ($table) {
+                $table->id();
+                $table->string('ticket_number'); // A-001
+                $table->foreignId('user_id')->nullable(); // Link to registered user
+                $table->string('customer_name')->nullable();
+                $table->string('customer_phone')->nullable();
+                $table->text('issue_detail')->nullable();
 
-// Seeder Route for Vercel
-Route::get('/seed-users', function () {
-    try {
-        // --- NEW REQUESTED ACCOUNTS ---
+                $table->enum('status', ['waiting', 'calling', 'serving', 'completed', 'skipped', 'cancelled'])->default('waiting');
 
-        // 1. Manager
+                $table->foreignId('service_id');
+                $table->foreignId('served_by_user_id')->nullable(); // CS ID
+                $table->foreignId('counter_id')->nullable();
+
+                $table->text('staff_response')->nullable();
+                $table->integer('rating')->nullable();
+                $table->text('feedback')->nullable();
+
+                $table->timestamp('called_at')->nullable();
+                $table->timestamp('served_at')->nullable();
+                $table->timestamp('completed_at')->nullable();
+                $table->timestamps();
+            });
+            $output .= "✅ Created 'queues' table.<br>";
+        }
+
+        // 2. Seed Data
+        $output .= "<h3>2. Seeding Data</h3>";
+
+        // Manager Account
         \App\Models\User::updateOrCreate(
             ['username' => 'manager'],
             [
@@ -105,8 +125,9 @@ Route::get('/seed-users', function () {
                 'role' => 'manager'
             ]
         );
+        $output .= "✅ User 'manager' ready (Pass: password).<br>";
 
-        // 2. CS
+        // CS Account
         \App\Models\User::updateOrCreate(
             ['username' => 'cs'],
             [
@@ -116,56 +137,23 @@ Route::get('/seed-users', function () {
                 'role' => 'cs'
             ]
         );
-
-        // --- EXISTING SETUP (Services & Counters) ---
+        $output .= "✅ User 'cs' ready (Pass: password).<br>";
 
         // Services
         \App\Models\Service::updateOrCreate(['id' => 1], ['name' => 'Customer Service', 'code' => 'A', 'description' => 'Layanan Umum']);
         \App\Models\Service::updateOrCreate(['id' => 2], ['name' => 'Teller', 'code' => 'B', 'description' => 'Pembayaran']);
         \App\Models\Service::updateOrCreate(['id' => 3], ['name' => 'Priority Tech', 'code' => 'C', 'description' => 'Gangguan Teknis']);
+        $output .= "✅ Services (A, B, C) ready.<br>";
 
         // Counters
-        \App\Models\Counter::updateOrCreate(['id' => 1], ['name' => 'Counter 1', 'status' => 'active']);
-        \App\Models\Counter::updateOrCreate(['id' => 2], ['name' => 'Counter 2', 'status' => 'active']);
-        \App\Models\Counter::updateOrCreate(['id' => 3], ['name' => 'Counter 3', 'status' => 'active']);
+        \App\Models\Counter::updateOrCreate(['id' => 1], ['name' => 'Counter 1', 'status' => true]);
+        \App\Models\Counter::updateOrCreate(['id' => 2], ['name' => 'Counter 2', 'status' => true]);
+        \App\Models\Counter::updateOrCreate(['id' => 3], ['name' => 'Counter 3', 'status' => true]);
+        $output .= "✅ Counters (1-3) ready.<br>";
 
-        return "ALL DATA SEEDED! <br> ACCOUNTS ADDED: <br> - super (pass: password) <br> - manager (pass: password) <br> - cs1, cs2, cs3 (pass: password)";
+        return $output . "<br><h3>🎉 SUCCESS! Database is ready.</h3><a href='/'>Go to Home</a>";
+
     } catch (\Exception $e) {
-        return "Seeding Failed: " . $e->getMessage();
-    }
-});
-
-// EMERGENCY DB PATCHER (Run Once)
-Route::get('/patch-db', function () {
-    try {
-        $output = "Patching Database...<br>";
-
-        // Add 'user_id'
-        if (!Schema::hasColumn('queues', 'user_id')) {
-            Schema::table('queues', function (Illuminate\Database\Schema\Blueprint $table) {
-                $table->foreignId('user_id')->nullable()->after('ticket_number');
-            });
-            $output .= "- Added 'user_id' column.<br>";
-        }
-
-        // Add 'issue_detail'
-        if (!Schema::hasColumn('queues', 'issue_detail')) {
-            Schema::table('queues', function (Illuminate\Database\Schema\Blueprint $table) {
-                $table->text('issue_detail')->nullable()->after('customer_phone');
-            });
-            $output .= "- Added 'issue_detail' column.<br>";
-        }
-
-        // Add 'staff_response'
-        if (!Schema::hasColumn('queues', 'staff_response')) {
-            Schema::table('queues', function (Illuminate\Database\Schema\Blueprint $table) {
-                $table->text('staff_response')->nullable()->after('issue_detail');
-            });
-            $output .= "- Added 'staff_response' column.<br>";
-        }
-
-        return $output . "DONE! Database is now compatible.";
-    } catch (\Exception $e) {
-        return "Patch Failed: " . $e->getMessage();
+        return "<h3>❌ SETUP FAILED</h3>" . $e->getMessage() . "<br><pre>" . $e->getTraceAsString() . "</pre>";
     }
 });
