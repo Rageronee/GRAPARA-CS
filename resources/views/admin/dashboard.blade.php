@@ -11,7 +11,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>body { font-family: 'Plus Jakarta Sans', sans-serif; }</style>
 </head>
-<body class="bg-slate-50 text-slate-800" x-data="{ loading: false }">
+<body class="bg-slate-50 text-slate-800 overflow-x-hidden" x-data="{ loading: false }">
 
     <!-- Global Loader -->
     <div x-show="loading" class="fixed inset-0 z-100 bg-white/80 backdrop-blur-md flex items-center justify-center p-4 transition" x-transition.opacity style="display: none;">
@@ -81,55 +81,57 @@
                 <h3 class="font-bold text-slate-800">Penilaian Kinerja Staff (Live)</h3>
                 <span class="text-xs text-slate-500">Diperbarui realtime</span>
             </div>
-            <table class="w-full text-left text-sm">
-                <thead class="bg-slate-50 text-slate-500 font-bold uppercase text-xs">
-                    <tr>
-                        <th class="px-6 py-4">Nama Staff</th>
-                        <th class="px-6 py-4">Status</th>
-                        <th class="px-6 py-4">Total Tiket Selesai</th>
-                        <th class="px-6 py-4">Rata-rata Durasi Layanan</th>
-                        <th class="px-6 py-4">Rating User</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    @forelse($staffStats as $staff)
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="px-6 py-4 font-bold text-slate-800 flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs uppercase">{{ substr($staff->name, 0, 2) }}</div>
-                            {{ $staff->name }}
-                        </td>
-                        <td class="px-6 py-4">
-                            @if($staff->status_label === 'Active')
-                                <span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">Online</span>
-                            @else
-                                <span class="px-2 py-1 rounded-full bg-slate-100 text-slate-500 text-xs font-bold">Offline</span>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 font-mono font-bold text-slate-700">{{ $staff->total_served }} Tiket</td>
-                        <td class="px-6 py-4">
-                            <span class="{{ $staff->avg_serve_time < 5 ? 'text-green-600' : ($staff->avg_serve_time < 10 ? 'text-yellow-600' : 'text-red-600') }} font-bold">
-                                {{ $staff->avg_serve_time }} Menit
-                            </span>
-                        </td>
-                        <td class="px-6 py-4">
-                            @if($staff->avg_rating > 0)
-                                <div class="flex items-center gap-1">
-                                    <span class="font-bold text-slate-900">{{ number_format($staff->avg_rating, 1) }}</span>
-                                    <svg class="w-4 h-4 text-yellow-500 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                    <span class="text-xs text-slate-400">/ 5.0</span>
-                                </div>
-                            @else
-                                <span class="text-slate-400 text-xs">-</span>
-                            @endif
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="5" class="px-6 py-12 text-center text-slate-400">Belum ada data kinerja staff.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm whitespace-nowrap">
+                    <thead class="bg-slate-50 text-slate-500 font-bold uppercase text-xs">
+                        <tr>
+                            <th class="px-6 py-4">Nama Staff</th>
+                            <th class="px-6 py-4">Status</th>
+                            <th class="px-6 py-4">Total Tiket Selesai</th>
+                            <th class="px-6 py-4">Rata-rata Durasi Layanan</th>
+                            <th class="px-6 py-4">Rating User</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse($staffStats as $staff)
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="px-6 py-4 font-bold text-slate-800 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs uppercase">{{ substr($staff->name, 0, 2) }}</div>
+                                {{ $staff->name }}
+                            </td>
+                            <td class="px-6 py-4">
+                                @if($staff->status_label === 'Active')
+                                    <span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">Online</span>
+                                @else
+                                    <span class="px-2 py-1 rounded-full bg-slate-100 text-slate-500 text-xs font-bold">Offline</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 font-mono font-bold text-slate-700">{{ $staff->total_served }} Tiket</td>
+                            <td class="px-6 py-4">
+                                <span class="{{ $staff->avg_serve_time < 5 ? 'text-green-600' : ($staff->avg_serve_time < 10 ? 'text-yellow-600' : 'text-red-600') }} font-bold">
+                                    {{ $staff->avg_serve_time }} Menit
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                @if($staff->avg_rating > 0)
+                                    <div class="flex items-center gap-1">
+                                        <span class="font-bold text-slate-900">{{ number_format($staff->avg_rating, 1) }}</span>
+                                        <svg class="w-4 h-4 text-yellow-500 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                        <span class="text-xs text-slate-400">/ 5.0</span>
+                                    </div>
+                                @else
+                                    <span class="text-slate-400 text-xs">-</span>
+                                @endif
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="px-6 py-12 text-center text-slate-400">Belum ada data kinerja staff.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
         
         <!-- Stats Overview -->
@@ -188,7 +190,7 @@
                         </h2>
                         <span class="text-xs bg-white border border-slate-200 px-3 py-1 rounded-full text-slate-500 font-mono hidden md:inline-block">Updated: {{ now()->format('H:i') }}</span>
                     </div>
-                    <div class="p-8">
+                    <div class="p-6 md:p-8">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             @foreach($liveStatus as $service)
                                 <div class="bg-slate-50 rounded-2xl p-6 border border-slate-100 relative overflow-hidden group hover:border-blue-300 transition">

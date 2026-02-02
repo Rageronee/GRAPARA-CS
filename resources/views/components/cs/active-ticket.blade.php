@@ -13,7 +13,7 @@
 
     @if(session('queue') && (session('queue')->status === \App\Enums\QueueStatus::CALLING || session('queue')->status === 'calling' || (is_object(session('queue')->status) && session('queue')->status->value === 'calling')))
         <div
-            class="bg-white border border-slate-200 rounded-3xl p-8 flex flex-col shadow-xl shadow-slate-200/50 relative overflow-hidden transition hover:shadow-2xl">
+            class="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 flex flex-col shadow-xl shadow-slate-200/50 relative overflow-hidden transition hover:shadow-2xl">
             <div class="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-blue-500 to-indigo-600">
             </div>
 
@@ -22,7 +22,7 @@
                     <span
                         class="text-xs font-bold bg-blue-100 text-blue-700 px-3 py-1 rounded-full uppercase tracking-wider mb-3 inline-block">Sedang
                         Melayani</span>
-                    <h2 class="text-6xl font-bold text-slate-900 mb-2 tracking-tight">
+                    <h2 class="text-4xl md:text-6xl font-bold text-slate-900 mb-2 tracking-tight">
                         {{ session('queue')->ticket_number }}
                     </h2>
                     <p class="text-xl text-slate-500 font-medium">{{ session('queue')->customer_name }}</p>

@@ -33,7 +33,7 @@
     </style>
 </head>
 
-<body class="bg-slate-50 font-sans antialiased text-slate-600" x-data="{
+<body class="bg-slate-50 font-sans antialiased text-slate-600 overflow-x-hidden" x-data="{
         stats: {{ json_encode($myDailyStats) }},
         loading: false,
         init() {

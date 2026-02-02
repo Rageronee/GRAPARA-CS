@@ -21,9 +21,9 @@
         }
 
         .glass {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(203, 213, 225, 0.4);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            /* Border handle by Tailwind classes for smoothness */
         }
 
         .bg-grid {
@@ -39,11 +39,14 @@
 
 <body
     class="antialiased bg-slate-50 text-slate-800 min-h-screen overflow-x-hidden selection:bg-blue-100 selection:text-blue-900"
+    @scroll.window="isScrolled = (window.pageYOffset > 50) ? true : false"
     x-cloak x-data="{ 
+          isScrolled: false,
           queueOpen: false, 
           // Stop popup if logged in
           authOpen: {{ !Auth::check() && (request()->has('action') || $errors->any()) ? 'true' : 'false' }}, 
           authType: '{{ $errors->has('name') || $errors->has('password') || $errors->has('password_confirmation') || $errors->has('username') && !$errors->has('login_error') ? 'register' : 'login' }}',
+          guideOpen: false,
           historyOpen: false,
           historyData: [],
           loading: false,
@@ -89,34 +92,46 @@
     </div>
 
     <!-- Navbar -->
-    <nav class="fixed w-full z-40 glass shadow-sm transition-all duration-300">
+    <nav class="fixed w-full z-40 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] border-b"
+         :class="isScrolled ? 'glass border-slate-200/50 py-3 shadow-sm' : 'bg-transparent border-transparent py-6'">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
                 <!-- Logo -->
                 <div class="flex items-center gap-3 cursor-pointer" @click="window.location.reload()">
                     <div class="h-10 w-10 flex items-center justify-center">
-                        <img src="{{ asset('grapara.png') }}" alt="Logo" class="h-10 w-10 object-contain">
+                        <img src="{{ asset('grapara.png') }}" alt="Logo" class="h-10 w-10 object-contain drop-shadow-md">
                     </div>
                     <div>
-                        <h1 class="text-xl font-bold text-slate-900 leading-none">Grapara</h1>
-                        <p class="text-[10px] font-bold text-blue-600 tracking-wider uppercase">Future Connection</p>
+                        <h1 class="text-xl font-bold leading-none transition-colors duration-500"
+                            :class="isScrolled ? 'text-slate-900' : 'text-white drop-shadow-md'">Grapara</h1>
+                        <p class="text-[10px] font-bold tracking-wider uppercase transition-colors duration-500"
+                           :class="isScrolled ? 'text-blue-600' : 'text-blue-200 drop-shadow-sm'">Future Connection</p>
                     </div>
                 </div>
 
                 <!-- Menu -->
                 <div class="hidden md:flex items-center gap-8">
                     <a href="#products"
-                        class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Produk</a>
+                        class="text-sm font-semibold transition-colors duration-500"
+                        :class="isScrolled ? 'text-slate-600 hover:text-blue-600' : 'text-slate-100 hover:text-white drop-shadow-sm'">Produk</a>
                     <a href="#services"
-                        class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Layanan</a>
-                    <a href="#faq" class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition">Bantuan</a>
+                        class="text-sm font-semibold transition-colors duration-500"
+                        :class="isScrolled ? 'text-slate-600 hover:text-blue-600' : 'text-slate-100 hover:text-white drop-shadow-sm'">Layanan</a>
+                    <a href="#faq" 
+                        class="text-sm font-semibold transition-colors duration-500"
+                        :class="isScrolled ? 'text-slate-600 hover:text-blue-600' : 'text-slate-100 hover:text-white drop-shadow-sm'">Bantuan</a>
+                    <button @click="guideOpen = true" 
+                        class="text-sm font-semibold transition-colors duration-500"
+                        :class="isScrolled ? 'text-slate-600 hover:text-blue-600' : 'text-slate-100 hover:text-white drop-shadow-sm'">Panduan Simulasi</button>
 
                     @auth
-                        <div class="flex items-center gap-4 pl-4 border-l border-slate-200">
+                        <div class="flex items-center gap-4 pl-4 border-l transition-colors duration-500"
+                             :class="isScrolled ? 'border-slate-200' : 'border-white/20'">
                             <!-- History Button: Only for Customers -->
                             @if(Auth::user()->role === 'customer')
                                 <button @click="historyOpen = true; hasNewHistory = false"
-                                    class="relative flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-blue-600 transition bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg">
+                                    class="relative flex items-center gap-2 text-sm font-bold transition px-3 py-1.5 rounded-lg"
+                                    :class="isScrolled ? 'text-slate-600 hover:text-blue-600 bg-slate-100 hover:bg-slate-200' : 'text-white bg-white/20 hover:bg-white/30 backdrop-blur-sm'">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -128,8 +143,10 @@
                             @endif
 
                             <div class="text-right hidden lg:block">
-                                <p class="text-xs text-slate-500">Selamat Datang,</p>
-                                <p class="text-sm font-bold text-slate-900 capitalize">{{ Auth::user()->name }}</p>
+                                <p class="text-xs transition-colors duration-500"
+                                   :class="isScrolled ? 'text-slate-500' : 'text-slate-200'">Selamat Datang,</p>
+                                <p class="text-sm font-bold capitalize transition-colors duration-500"
+                                   :class="isScrolled ? 'text-slate-900' : 'text-white drop-shadow-sm'">{{ Auth::user()->name }}</p>
                             </div>
 
                             @if(Auth::user()->role !== 'customer')
@@ -139,7 +156,9 @@
                                     <!-- Admin Logout Button -->
                                     <form action="{{ route('logout') }}" method="POST" @submit="loading = true">
                                         @csrf
-                                        <button class="bg-red-50 text-red-600 hover:bg-red-100 p-2 rounded-full transition" title="Logout">
+                                        <button class="p-2 rounded-full transition" 
+                                                :class="isScrolled ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-white/10 text-red-200 hover:bg-white/20 hover:text-red-100'"
+                                                title="Logout">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                                         </button>
                                     </form>
@@ -148,13 +167,15 @@
                                 <form action="{{ route('logout') }}" method="POST" @submit="loading = true">
                                     @csrf
                                     <button
-                                        class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold transition">Logout</button>
+                                        class="px-4 py-2 rounded-lg text-xs font-bold transition"
+                                        :class="isScrolled ? 'bg-slate-200 hover:bg-slate-300 text-slate-700' : 'bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm'">Logout</button>
                                 </form>
                             @endif
                         </div>
                     @else
                         <button @click="authOpen = true; authType = 'login'"
-                            class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-slate-900/20 transition flex items-center gap-2">
+                            class="px-6 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2"
+                            :class="isScrolled ? 'bg-slate-900 hover:bg-slate-800 text-white shadow-lg shadow-slate-900/20' : 'bg-white text-blue-900 hover:bg-blue-50 shadow-xl shadow-black/10'">
                             <span>Mulai Sekarang</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -169,29 +190,36 @@
 
     <!-- Hero -->
     <header
-        class="pt-32 pb-20 px-4 max-w-7xl mx-auto min-h-[85vh] flex flex-col items-center text-center justify-center">
-        <div class="max-w-3xl space-y-8 relative z-10">
+        class="relative pt-32 pb-32 px-4 min-h-screen flex flex-col items-center text-center justify-center overflow-hidden">
+        
+        <!-- Background Banner -->
+        <div class="absolute inset-0 z-0 bg-slate-900">
+            <img src="{{ asset('assets/img/bg.avif') }}" 
+                 alt="Background" 
+                 class="w-full h-full object-cover opacity-60 mix-blend-overlay">
+            <div class="absolute inset-0 bg-linear-to-b from-slate-900/80 via-slate-900/60 to-slate-900/90"></div>
+        </div>
+
+        <div class="max-w-4xl space-y-8 relative z-10 w-full">
             <div
-                class="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 px-3 py-1 rounded-full text-blue-600 text-xs font-bold uppercase tracking-wider mx-auto">
-                <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                class="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 px-4 py-1.5 rounded-full text-blue-200 text-xs font-bold uppercase tracking-wider mx-auto backdrop-blur-sm">
+                <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
                 MEMBANGUN DEMI NEGERI
             </div>
 
-            <h1 class="text-6xl md:text-7xl font-bold text-slate-900 leading-tight">
-                Layanan Digital <br>
-                <span
-                    class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Terintegrasi.</span>
+            <h1 class="text-5xl md:text-7xl font-bold text-white leading-tight drop-shadow-2xl tracking-tight">
+                Layanan Digital
             </h1>
 
-            <p class="text-lg text-slate-500 leading-relaxed max-w-xl mx-auto">
-                Nikmati kemudahan akses layanan perbankan dan telekomunikasi dalam satu atap. Cepat, efisien, dan ramah.
+            <p class="text-lg md:text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto drop-shadow-md font-medium">
+                Nikmati kemudahan akses layanan telekomunikasi dalam satu atap. <br class="hidden md:block"> Cepat, efisien, dan ramah.
             </p>
 
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <!-- Buttons: Conditional Logic for Admin/Customer -->
+            <div class="flex flex-col sm:flex-row justify-center gap-4 pt-4">
                 @if(Auth::check() && Auth::user()->role !== 'customer')
+                    <!-- Admin Dashboard -->
                     <a href="{{ url('/dashboard') }}"
-                        class="px-8 py-4 bg-slate-900 text-white rounded-xl font-bold transition hover:scale-105 flex justify-center items-center gap-2">
+                        class="px-8 py-4 bg-slate-900 text-white rounded-xl font-bold transition hover:scale-105 flex justify-center items-center gap-2 shadow-lg hover:shadow-xl">
                         Masuk Dashboard
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -199,27 +227,27 @@
                         </svg>
                     </a>
                 @else
-                    <button
-                        @click="{{ Auth::check() ? "queueOpen = true; queueType = 'general'" : "authOpen = true; authType = 'login'" }}"
-                        class="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-xl shadow-blue-600/20 transition hover:scale-105 flex justify-center items-center gap-2">
+                    <!-- Customer/Guest Buttons -->
+                    <button @click="{{ Auth::check() ? "queueOpen = true; queueType = 'general'" : "authOpen = true; authType = 'login'" }}"
+                        class="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition hover:scale-105 flex justify-center items-center gap-2 shadow-lg shadow-blue-600/30">
                         Ambil Antrian
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </button>
-                    <button
-                        @click="{{ Auth::check() ? "queueOpen = true; queueType = 'complaint'" : "authOpen = true; authType = 'login'" }}"
-                        class="px-8 py-4 bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-700 rounded-xl font-bold transition flex justify-center items-center gap-2 hover:border-red-500 hover:text-red-500">
+                    
+                    <button @click="window.location.href='#faq'"
+                        class="px-8 py-4 bg-white text-slate-900 hover:bg-slate-50 rounded-xl font-bold transition hover:scale-105 flex justify-center items-center gap-2 shadow-lg">
                         <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                         </svg>
                         Lapor Gangguan
                     </button>
                 @endif
             </div>
+
 
             @if(session('message'))
                 <div
@@ -250,13 +278,17 @@
             <div class="grid md:grid-cols-2 gap-8">
                 <!-- Telkomsel Halo -->
                 <div
-                    class="group relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden border border-slate-100">
-                    <div
-                        class="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-full blur-3xl -mr-16 -mt-16 transition group-hover:bg-red-500/20">
+                    class="group relative bg-white rounded-3xl p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden border border-slate-100 flex flex-col">
+                    <div class="h-48 w-full overflow-hidden rounded-t-2xl mb-4 relative">
+                        <img src="{{ asset('assets/img/grap.avif') }}" 
+                             alt="Telkomsel Halo" 
+                             class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">
+                        <div class="absolute inset-0 bg-linear-to-t from-white to-transparent"></div>
                     </div>
-                    <div class="relative z-10">
+                    
+                    <div class="relative z-10 px-2 pb-2">
                         <div
-                            class="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mb-6">
+                            class="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mb-6 -mt-12 shadow-lg border-2 border-white relative z-20">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z">
@@ -289,13 +321,17 @@
 
                 <!-- Indihome Fiber -->
                 <div
-                    class="group relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden border border-slate-100">
-                    <div
-                        class="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -mr-16 -mt-16 transition group-hover:bg-blue-500/20">
+                    class="group relative bg-white rounded-3xl p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden border border-slate-100 flex flex-col">
+                    <div class="h-48 w-full overflow-hidden rounded-t-2xl mb-4 relative">
+                        <img src="{{ asset('assets/img/fibr.avif') }}" 
+                             alt="Indihome Fiber" 
+                             class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">
+                        <div class="absolute inset-0 bg-linear-to-t from-white to-transparent"></div>
                     </div>
-                    <div class="relative z-10">
+                    
+                    <div class="relative z-10 px-2 pb-2">
                         <div
-                            class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
+                            class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6 -mt-12 shadow-lg border-2 border-white relative z-20">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0">
@@ -406,7 +442,7 @@
             <div class="grid md:grid-cols-3 gap-8">
                 <!-- Card 1 -->
                 <div
-                    class="p-8 rounded-3xl bg-slate-50 hover:bg-white hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border border-slate-100">
+                    class="p-6 md:p-8 rounded-3xl bg-slate-50 hover:bg-white hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border border-slate-100">
                     <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -434,7 +470,7 @@
 
                 <!-- Card 2 -->
                 <div
-                    class="p-8 rounded-3xl bg-slate-50 hover:bg-white hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border border-slate-100">
+                    class="p-6 md:p-8 rounded-3xl bg-slate-50 hover:bg-white hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border border-slate-100">
                     <div
                         class="w-14 h-14 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center mb-6">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -463,7 +499,7 @@
 
                 <!-- Card 3 -->
                 <div
-                    class="p-8 rounded-3xl bg-slate-50 hover:bg-white hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border border-slate-100">
+                    class="p-6 md:p-8 rounded-3xl bg-slate-50 hover:bg-white hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border border-slate-100">
                     <div class="w-14 h-14 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mb-6">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -518,7 +554,7 @@
                 </svg>
             </button>
 
-            <div class="p-8">
+            <div class="p-6 md:p-8">
                 <div class="text-center mb-6">
                     <h3 class="text-2xl font-bold text-slate-900">Selamat Datang</h3>
                     <p class="text-slate-500 text-sm mt-1">Silakan masuk untuk melanjutkan</p>
@@ -690,7 +726,7 @@
     <div x-show="queueOpen"
         class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4"
         style="display: none;">
-        <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl p-8 relative" @click.away="queueOpen = false">
+        <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl p-6 md:p-8 relative" @click.away="queueOpen = false">
             <button @click="queueOpen = false" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
@@ -793,11 +829,89 @@
                         placeholder="Jelaskan keperluan atau gangguan Anda..." required></textarea>
                 </div>
 
-                <button type="submit"
-                    :class="selectedService && detail.length > 0 ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-slate-200 text-slate-400 cursor-not-allowed'"
-                    :disabled="!selectedService || detail.length === 0"
-                    class="w-full font-bold py-4 rounded-xl transition shadow-xl">AMBIL TIKET ANTRIAN</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Guide Modal (Responsive) -->
+    <div x-show="guideOpen"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4"
+        style="display: none;">
+        <div class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl h-[90vh] flex flex-col relative overflow-hidden"
+            @click.away="guideOpen = false">
+            
+            <!-- Header -->
+            <div class="flex justify-between items-center p-6 border-b border-slate-100 bg-slate-50/50">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900">Panduan Simulasi</h3>
+                    <p class="text-xs text-slate-500">Skenario interaksi end-to-end</p>
+                </div>
+                <button @click="guideOpen = false" class="text-slate-400 hover:text-slate-600 p-1">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 bg-slate-50">
+                
+                <!-- Step 1 -->
+                <section class="flex flex-col md:flex-row gap-6">
+                    <div class="shrink-0 flex flex-col items-center">
+                        <div class="w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg shadow-blue-500/30">1</div>
+                        <div class="h-full w-0.5 bg-blue-200 my-2"></div>
+                    </div>
+                    <div class="flex-1 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h4 class="text-lg font-bold text-slate-900 mb-2">Pelanggan (Customer)</h4>
+                        <p class="text-sm text-slate-500 mb-4">Simulasi pengambilan tiket antrian.</p>
+                        <ul class="space-y-2 text-sm text-slate-600">
+                            <li class="flex gap-2"><span class="font-bold text-blue-600">•</span> Klik tombol "Ambil Antrian".</li>
+                            <li class="flex gap-2"><span class="font-bold text-blue-600">•</span> Login / Register akun baru.</li>
+                            <li class="flex gap-2"><span class="font-bold text-blue-600">•</span> Pilih layanan & isi detail.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Step 2 -->
+                <section class="flex flex-col md:flex-row gap-6">
+                    <div class="shrink-0 flex flex-col items-center">
+                        <div class="w-12 h-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg shadow-emerald-500/30">2</div>
+                        <div class="h-full w-0.5 bg-emerald-200 my-2"></div>
+                    </div>
+                    <div class="flex-1 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h4 class="text-lg font-bold text-slate-900 mb-2">Customer Service (CS)</h4>
+                        <p class="text-sm text-slate-500 mb-4">Petugas memanggil antrian.</p>
+                        <div class="bg-emerald-50 p-3 rounded-lg mb-4 text-xs">
+                            <strong>Login CS:</strong> User: `cs`, Pass: `password`
+                        </div>
+                        <ul class="space-y-2 text-sm text-slate-600">
+                            <li class="flex gap-2"><span class="font-bold text-emerald-600">•</span> Login di browser lain (Incognito).</li>
+                            <li class="flex gap-2"><span class="font-bold text-emerald-600">•</span> Klik "PANGGIL AUTO".</li>
+                            <li class="flex gap-2"><span class="font-bold text-emerald-600">•</span> Input respon & Selesaikan.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Step 3 -->
+                <section class="flex flex-col md:flex-row gap-6">
+                    <div class="shrink-0 flex flex-col items-center">
+                        <div class="w-12 h-12 bg-slate-800 text-white rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg shadow-slate-500/30">3</div>
+                    </div>
+                    <div class="flex-1 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h4 class="text-lg font-bold text-slate-900 mb-2">Manager (Admin)</h4>
+                        <p class="text-sm text-slate-500 mb-4">Monitoring kinerja.</p>
+                        <div class="bg-slate-100 p-3 rounded-lg mb-4 text-xs">
+                            <strong>Login Manager:</strong> User: `manager`, Pass: `password`
+                        </div>
+                        <ul class="space-y-2 text-sm text-slate-600">
+                            <li class="flex gap-2"><span class="font-bold text-slate-800">•</span> Login sebagai Manager.</li>
+                            <li class="flex gap-2"><span class="font-bold text-slate-800">•</span> Pantau statistik & kinerja staff.</li>
+                        </ul>
+                    </div>
+                </section>
+
+            </div>
         </div>
     </div>
 

@@ -24,7 +24,7 @@
 
     <!-- Card Container -->
     <div
-        class="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200/50 max-w-sm w-full text-center relative overflow-hidden ring-1 ring-slate-100">
+        class="bg-white p-6 md:p-8 rounded-3xl shadow-xl shadow-slate-200/50 max-w-sm w-full text-center relative overflow-hidden ring-1 ring-slate-100">
 
         <!-- Decoration -->
         <div class="absolute top-0 left-0 w-full h-2 bg-blue-600 bg-linear-to-r from-blue-500 to-indigo-600"></div>

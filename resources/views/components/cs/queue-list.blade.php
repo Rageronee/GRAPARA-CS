@@ -9,7 +9,7 @@
             <form action="{{ route('queue.call_specific', $complaint->id) }}" method="POST" class="block">
                 @csrf
                 <button type="submit"
-                    class="w-full text-left p-5 hover:bg-slate-50 transition group relative overflow-hidden">
+                    class="w-full text-left p-4 md:p-5 hover:bg-slate-50 transition group relative overflow-hidden">
                     <div
                         class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 opacity-0 group-hover:opacity-100 transition">
                     </div>
@@ -39,7 +39,7 @@
                 </button>
             </form>
         @empty
-            <div class="p-8 text-center text-slate-400">
+            <div class="p-6 md:p-8 text-center text-slate-400">
                 <div class="bg-slate-50 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
                     <svg class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>

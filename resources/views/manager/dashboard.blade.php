@@ -192,7 +192,7 @@
                         </h2>
                         <span class="text-xs bg-white border border-slate-200 px-3 py-1 rounded-full text-slate-500 font-mono hidden md:inline-block">Updated: {{ now()->format('H:i') }}</span>
                     </div>
-                    <div class="p-8">
+                    <div class="p-6 md:p-8">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             @foreach($liveStatus as $service)
                                 <div class="bg-slate-50 rounded-2xl p-6 border border-slate-100 relative overflow-hidden group hover:border-blue-300 transition">
