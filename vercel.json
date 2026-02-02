@@ -15,15 +15,18 @@
             "dest": "/public/build/$1"
         },
         {
+            "src": "/assets/(.*)",
+            "dest": "/public/assets/$1",
+            "headers": {
+                "Cache-Control": "public, max-age=31536000, immutable"
+            }
+        },
+        {
             "src": "/(grapara.png|grapara.ico|favicon.ico|robots.txt)",
             "dest": "/public/$1"
         },
         {
-            "src": "/assets/(.*)",
-            "dest": "/public/assets/$1"
-        },
-        {
-            "src": "/((?!public/).*)",
+            "src": "/((?!public/|assets/|build/).*)",
             "dest": "/api/index.php"
         }
     ],
