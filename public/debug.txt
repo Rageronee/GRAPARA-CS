@@ -1,0 +1,1 @@
+If you can see this, Vercel is serving static files from the public directory correctly.

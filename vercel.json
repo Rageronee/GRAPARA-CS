@@ -8,6 +8,9 @@
     },
     "routes": [
         {
+            "handle": "filesystem"
+        },
+        {
             "src": "/(build|assets)/(.*)",
             "dest": "/public/$1/$2"
         },
