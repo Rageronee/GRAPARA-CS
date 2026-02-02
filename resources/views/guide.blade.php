@@ -7,7 +7,7 @@
     <title>Panduan Simulasi - Grapara CS</title>
 
     <!-- Favicon -->
-    <link rel="icon" href="{{ asset('grapara.ico') }}">
+    <link rel="icon" href="https://cdn.jsdelivr.net/gh/Rageronee/GRAPARA-CS@main/public/grapara.ico">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -43,7 +43,8 @@
                 <!-- Logo -->
                 <a href="{{ url('/') }}" class="flex items-center gap-3 group">
                     <div class="h-10 w-10 flex items-center justify-center transition group-hover:scale-110">
-                        <img src="{{ asset('grapara.png') }}" alt="Logo" class="h-10 w-10 object-contain">
+                        <img src="https://cdn.jsdelivr.net/gh/Rageronee/GRAPARA-CS@main/public/grapara.png" alt="Logo"
+                            class="h-10 w-10 object-contain">
                     </div>
                     <div>
                         <h1 class="text-xl font-bold text-slate-900 leading-none">Grapara</h1>

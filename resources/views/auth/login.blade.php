@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login - Grapara</title>
     <!-- Favicon -->
-    <link rel="icon" href="{{ asset('grapara.ico') }}">
+    <link rel="icon" href="https://cdn.jsdelivr.net/gh/Rageronee/GRAPARA-CS@main/public/grapara.ico">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -53,7 +53,8 @@
             <a href="{{ url('/') }}" class="group mb-4">
                 <div
                     class="relative w-16 h-16 flex items-center justify-center bg-white rounded-2xl shadow-lg border border-slate-100 transition group-hover:scale-105 group-hover:shadow-blue-200">
-                    <img src="{{ asset('grapara.png') }}" alt="Logo" class="w-10 h-10 object-contain">
+                    <img src="https://cdn.jsdelivr.net/gh/Rageronee/GRAPARA-CS@main/public/grapara.png" alt="Logo"
+                        class="w-10 h-10 object-contain">
                 </div>
             </a>
             <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Selamat Datang</h1>

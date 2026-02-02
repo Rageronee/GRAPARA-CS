@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Grapara CS</title>
     <!-- Favicon -->
-    <link rel="icon" href="{{ asset('grapara.ico') }}">
+    <link rel="icon" href="https://cdn.jsdelivr.net/gh/Rageronee/GRAPARA-CS@main/public/grapara.ico">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -79,7 +79,7 @@
             <div class="relative w-24 h-24 mb-6">
                 <div class="absolute inset-0 bg-blue-100 rounded-full animate-ping opacity-20"></div>
                 <div class="absolute inset-0 bg-white rounded-full shadow-xl flex items-center justify-center border border-slate-100 z-10">
-                <img src="{{ asset('grapara.png') }}" alt="Loading..." class="w-14 h-14 object-contain animate-pulse">
+                <img src="https://cdn.jsdelivr.net/gh/Rageronee/GRAPARA-CS@main/public/grapara.png" alt="Loading..." class="w-14 h-14 object-contain animate-pulse">
                 </div>
                 <!-- Spinning Ring -->
                 <div class="absolute -inset-2 border-4 border-blue-600/20 rounded-full"></div>
@@ -99,7 +99,7 @@
                 <!-- Logo -->
                 <div class="flex items-center gap-3 cursor-pointer" @click="window.location.reload()">
                     <div class="h-10 w-10 flex items-center justify-center">
-                        <img src="{{ asset('grapara.png') }}" alt="Logo" class="h-10 w-10 object-contain drop-shadow-md">
+                        <img src="https://cdn.jsdelivr.net/gh/Rageronee/GRAPARA-CS@main/public/grapara.png" alt="Logo" class="h-10 w-10 object-contain drop-shadow-md">
                     </div>
                     <div>
                         <h1 class="text-xl font-bold leading-none transition-colors duration-500"
