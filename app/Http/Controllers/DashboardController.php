@@ -182,9 +182,10 @@ class DashboardController extends Controller
             session()->now('queue', $activeQueue);
         }
 
-        // 2. Fetch Waiting Queues
+        // 2. Fetch Waiting Queues (Limit for Performance)
         $complaints = Queue::where('status', 'waiting')
             ->orderBy('created_at', 'asc')
+            ->take(50) // Limit to prevent payload bloat
             ->get();
 
         // 3. Fetch Customer History if Active

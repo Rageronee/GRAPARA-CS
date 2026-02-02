@@ -37,8 +37,8 @@
         stats: {{ json_encode($myDailyStats) }},
         loading: false,
         init() {
-            // Start polling every 5 seconds
-            setInterval(() => this.fetchUpdates(), 5000);
+            // Start polling every 12 seconds
+            setInterval(() => this.fetchUpdates(), 12000);
         },
         async fetchUpdates() {
             this.loading = true;

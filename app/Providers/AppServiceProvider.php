@@ -32,8 +32,9 @@ class AppServiceProvider extends ServiceProvider
             config(['logging.default' => 'stderr']); // Log to Vercel console
             config(['view.compiled' => '/tmp']);    // Writable tmp dir for views
 
-            // --- AUTO-HEALING: Schema & Data Repair on Boot ---
-            // This replaces the need for manual /patch-db or /seed-users urls
+            // --- AUTO-HEAL: Schema & Data Repair on Boot ---
+            // DISABLED for Performance. Enable manually via route if needed.
+            /*
             try {
                 // 1. Schema Patch (Fix missing columns)
                 if (\Illuminate\Support\Facades\Schema::hasTable('queues')) {
@@ -71,10 +72,13 @@ class AppServiceProvider extends ServiceProvider
                 // Log silently to stderr so valid requests don't crash
                 error_log("Auto-Heal Error: " . $e->getMessage());
             }
+            */
         }
 
-        // --- GLOBAL AUTO-HEAL (Runs in Local & Production) ---
-        // Ensures 'cs' and 'manager' accounts always exist
+        // --- GLOBAL AUTO-HEAL (Performance Fix: DISABLED) ---
+        // Was causing lag on Vercel due to running queries on every request.
+        // Uncomment only if you need to repair the database structure manually.
+        /*
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('users')) {
                 // Ensure CS exists
@@ -102,5 +106,6 @@ class AppServiceProvider extends ServiceProvider
         } catch (\Exception $e) {
             // Log silently
         }
+        */
     }
 }
