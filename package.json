@@ -4,7 +4,7 @@
     "type": "module",
     "scripts": {
         "build": "vite build && mkdir -p dist && echo 'vercel' > dist/touch.txt",
-        "vercel-build": "npm run build",
+        "vercel-build": "npm run build && mkdir -p assets && cp -r public/assets/* assets/",
         "dev": "vite"
     },
     "devDependencies": {

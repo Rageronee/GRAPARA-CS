@@ -11,10 +11,6 @@
             "handle": "filesystem"
         },
         {
-            "src": "/(build|assets)/(.*)",
-            "dest": "/public/$1/$2"
-        },
-        {
             "src": "/(grapara.png|grapara.ico|favicon.ico|robots.txt)",
             "dest": "/public/$1"
         },
