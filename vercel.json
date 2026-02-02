@@ -8,14 +8,15 @@
     },
     "routes": [
         {
-            "handle": "filesystem"
-        },
-        {
             "src": "/build/(.*)",
             "dest": "/public/build/$1"
         },
         {
-            "src": "/(.*)",
+            "src": "/(.*\\.(css|js|png|jpg|jpeg|gif|webp|ico|svg|woff|woff2|ttf|eot|json))",
+            "dest": "/public/$1"
+        },
+        {
+            "src": "/((?!public/).*)",
             "dest": "/api/index.php"
         }
     ],
